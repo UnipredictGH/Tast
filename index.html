@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>UniPredict Admin</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#0f0f1a;color:#e2e8f0;font-size:14px;min-height:100vh}
+button,a{cursor:pointer}
+#top{background:#161625;padding:12px 18px;border-bottom:2px solid #7C3AED;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:50}
+#top h1{font-size:16px;color:#a78bfa;margin:0;font-weight:900}
+#top a{color:#a78bfa;font-size:12px;text-decoration:none;border:1px solid rgba(124,58,237,.3);padding:5px 10px;border-radius:6px}
+#tabs{background:#161625;display:flex;overflow-x:auto;padding:0 10px;border-bottom:1px solid rgba(255,255,255,.08);scrollbar-width:none}
+#tabs::-webkit-scrollbar{display:none}
+.tab{padding:12px 13px;font-size:12px;font-weight:600;color:#64748b;border:none;background:none;white-space:nowrap;border-bottom:3px solid transparent;font-family:Arial,sans-serif}
+.tab.on{color:#a78bfa;border-bottom-color:#7C3AED}
+#page{padding:16px;max-width:980px;margin:0 auto;padding-bottom:80px}
+.card{background:#161625;border:1px solid rgba(255,255,255,.07);border-radius:10px;margin-bottom:14px;overflow:hidden}
+.card-h{padding:13px 16px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.card-h h3{font-size:14px;font-weight:800;color:#f1f5f9;margin:0}
+.card-b{padding:16px}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
+@media(min-width:480px){.stats{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:700px){.stats{grid-template-columns:repeat(6,1fr)}}
+.stat{background:#1e1e32;border-radius:10px;padding:14px 10px;text-align:center}
+.stat-n{font-size:24px;font-weight:900;color:#f1f5f9}
+.stat-l{font-size:10px;color:#64748b;margin-top:3px;font-weight:600;text-transform:uppercase}
+.btn{display:inline-flex;align-items:center;padding:7px 13px;border-radius:7px;font-size:12px;font-weight:700;border:none;font-family:Arial,sans-serif;white-space:nowrap}
+.btn-p{background:linear-gradient(135deg,#7C3AED,#EC4899);color:#fff}
+.btn-s{background:rgba(124,58,237,.15);color:#a78bfa;border:1px solid rgba(124,58,237,.3)}
+.btn-r{background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.3)}
+.btn-g{background:rgba(16,185,129,.15);color:#6ee7b7;border:1px solid rgba(16,185,129,.3)}
+.btn-o{background:rgba(245,158,11,.15);color:#fcd34d;border:1px solid rgba(245,158,11,.3)}
+.btn-gh{background:transparent;color:#64748b;border:1px solid rgba(255,255,255,.1)}
+.btn-sm{padding:4px 9px;font-size:11px}
+.field{margin-bottom:11px}
+.field label{display:block;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;margin-bottom:4px}
+.field input,.field select,.field textarea{width:100%;padding:9px 12px;background:#1e1e32;border:1.5px solid rgba(255,255,255,.08);border-radius:8px;color:#f1f5f9;font-size:13px;font-family:Arial,sans-serif;outline:none;box-sizing:border-box}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:#7C3AED}
+.field textarea{resize:vertical;min-height:68px}
+.field input[type=color]{padding:3px;height:38px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{padding:8px 10px;text-align:left;font-size:10px;font-weight:700;color:#475569;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.06)}
+td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.03);vertical-align:middle}
+.bdg{display:inline-flex;padding:2px 7px;border-radius:99px;font-size:10px;font-weight:700}
+.bp{background:rgba(124,58,237,.2);color:#a78bfa}
+.bg{background:rgba(16,185,129,.15);color:#6ee7b7}
+.br{background:rgba(239,68,68,.15);color:#fca5a5}
+.bo{background:rgba(245,158,11,.15);color:#fcd34d}
+.bb{background:rgba(59,130,246,.15);color:#93c5fd}
+.by{background:rgba(255,255,255,.07);color:#94a3b8}
+#ov{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;z-index:200;padding:16px}
+#ov.open{display:flex}
+#md{background:#161625;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:20px;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;position:relative}
+#md h3{font-size:15px;font-weight:800;color:#f1f5f9;margin:0 0 14px 0}
+#mcl{position:absolute;top:12px;right:14px;background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;padding:4px;line-height:1;font-family:Arial,sans-serif}
+.tog{width:44px;height:24px;background:#334155;border-radius:99px;border:none;cursor:pointer;position:relative;display:inline-block;vertical-align:middle;transition:background .2s}
+.tog.on{background:#7C3AED}
+.tog-d{width:18px;height:18px;background:#fff;border-radius:50%;position:absolute;top:3px;left:3px;transition:left .2s;pointer-events:none}
+.tog.on .tog-d{left:23px}
+#toasts{position:fixed;bottom:14px;right:14px;z-index:999;display:flex;flex-direction:column;gap:6px;pointer-events:none}
+.toast{background:#1e1e32;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:10px 14px;font-size:12px;color:#f1f5f9;min-width:180px}
+.lrow{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04);gap:10px}
+.lrow:last-child{border-bottom:none}
+.lrow h4{font-size:13px;font-weight:600;color:#f1f5f9;margin:0}
+.lrow p{font-size:11px;color:#475569;margin:2px 0 0 0}
+.sb{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.ph{font-size:16px;font-weight:800;color:#f1f5f9;margin:0}
+.muted{color:#64748b;font-size:12px}
+.empty{text-align:center;padding:36px;color:#475569}
+.pager{display:flex;gap:4px;flex-wrap:wrap;padding:10px 14px;border-top:1px solid rgba(255,255,255,.06)}
+</style>
+</head>
+<body>
+<div id="top">
+  <h1>UniPredict Ghana Admin</h1>
+  <a href="https://uni-predict.netlify.app" target="_blank">Student Site</a>
+</div>
+<div id="tabs"></div>
+<div id="page"></div>
+<div id="toasts"></div>
+<div id="ov">
+  <div id="md">
+    <button id="mcl">X</button>
+    <div id="mbd"></div>
+  </div>
+</div>
+<script>
+var SB="https://urfqevstrwsrtysbllah.supabase.co";
+var SK="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVyZnFldnN0cndzcnR5c2JsbGFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUzNTQ5OTQsImV4cCI6MjEwMDkzMDk5NH0.9TPgghMQdHjqwRm51dEVHJ6O115FPBoYBfZHO_siTYI";
+var CUR="dash";
+
+function hd(){
+return{apikey:SK,Authorization:“Bearer “+SK,“Content-Type”:“application/json”,Prefer:“return=representation”};
+}
+function api(method,table,query,body){
+var url=SB+”/rest/v1/”+table+(query?”?”+query:””);
+var opts={method:method,headers:hd()};
+if(body) opts.body=JSON.stringify(body);
+return fetch(url,opts).then(function(r){
+if(!r.ok) return r.text().then(function(t){throw new Error(t);});
+return method===“DELETE”?null:r.json();
+});
+}
+function GET(t,q){return api(“GET”,t,q);}
+function POST(t,b){return api(“POST”,t,””,b);}
+function PATCH(t,id,b){return api(“PATCH”,t,“id=eq.”+id,b);}
+function DEL(t,id){return api(“DELETE”,t,“id=eq.”+id);}
+function SET(k,v){
+var h=hd();h.Prefer=“resolution=merge-duplicates”;
+return fetch(SB+”/rest/v1/settings”,{method:“POST”,headers:h,body:JSON.stringify({key:k,value:v,updated_at:new Date().toISOString()})}).then(function(r){if(!r.ok)throw new Error(“fail”);});
+}
+function ALL(t,q){
+return ALL2(t,q,0,[]);
+}
+function ALL2(t,q,off,acc){
+var sep=q?”&”:””;
+return GET(t,(q||””)+sep+“limit=1000&offset=”+off).then(function(d){
+var rows=acc.concat(d||[]);
+if((d||[]).length===1000) return ALL2(t,q,off+1000,rows);
+return rows;
+});
+}
+
+function toast(msg){
+var e=document.createElement(“div”);
+e.className=“toast”;e.textContent=msg;
+document.getElementById(“toasts”).appendChild(e);
+setTimeout(function(){e.remove();},3000);
+}
+function openMd(fn){
+document.getElementById(“mbd”).innerHTML=””;
+fn(document.getElementById(“mbd”));
+document.getElementById(“ov”).className=“open”;
+}
+function closeMd(){document.getElementById(“ov”).className=””;}
+document.getElementById(“mcl”).onclick=closeMd;
+document.getElementById(“ov”).onclick=function(e){if(e.target===this)closeMd();};
+
+function gv(id){var e=document.getElementById(id);return e?e.value.trim():””;}
+function sv(id){var e=document.getElementById(id);return e?e.value:””;}
+function ge(id){return document.getElementById(id);}
+function dt(d){return d?new Date(d).toLocaleDateString(“en-GB”,{day:“numeric”,month:“short”,year:“numeric”}):”–”;}
+function bx(t,c){var s=document.createElement(“span”);s.className=“bdg “+c;s.textContent=t;return s;}
+function mk(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;}
+function btn(txt,cls,fn){
+var b=mk(“button”,cls,txt);
+b.onclick=function(e){e.stopPropagation();fn();};
+return b;
+}
+function fld(lbl,html){
+var d=mk(“div”,“field”);
+d.innerHTML=”<label>”+lbl+”</label>”+html;
+return d;
+}
+function row(){
+var d=mk(“div”,””);d.style.cssText=“display:flex;gap:8px;margin-top:14px;flex-wrap:wrap”;
+for(var i=0;i<arguments.length;i++)d.appendChild(arguments[i]);
+return d;
+}
+function sp(){return document.createTextNode(” “);}
+
+var TABS=[
+{id:“dash”,l:“Dashboard”},{id:“unis”,l:“Universities”},{id:“progs”,l:“Programmes”},
+{id:“ai”,l:“AI Inbox”},{id:“schols”,l:“Scholarships”},{id:“news”,l:“News”},
+{id:“forms”,l:“Forms”},{id:“anns”,l:“Announcements”},{id:“pays”,l:“Payments”},
+{id:“users”,l:“Users”},{id:“appear”,l:“Appearance”},{id:“stext”,l:“Site Text”},
+{id:“feats”,l:“Toggles”},{id:“pstack”,l:“Paystack”}
+];
+
+function buildTabs(){
+var c=ge(“tabs”);c.innerHTML=””;
+TABS.forEach(function(t){
+var b=mk(“button”,“tab”+(CUR===t.id?” on”:””),t.l);
+b.setAttribute(“data-id”,t.id);
+b.onclick=function(){go(this.getAttribute(“data-id”));};
+c.appendChild(b);
+});
+}
+function go(id){
+CUR=id;buildTabs();
+var p=ge(“page”);p.innerHTML=””;
+if(id===“dash”)pgDash(p);
+else if(id===“unis”)pgUnis(p);
+else if(id===“progs”)pgProgs(p);
+else if(id===“ai”)pgAI(p);
+else if(id===“schols”)pgSchols(p);
+else if(id===“news”)pgNews(p);
+else if(id===“forms”)pgForms(p);
+else if(id===“anns”)pgAnns(p);
+else if(id===“pays”)pgPays(p);
+else if(id===“users”)pgUsers(p);
+else if(id===“appear”)pgAppear(p);
+else if(id===“stext”)pgStext(p);
+else if(id===“feats”)pgFeats(p);
+else if(id===“pstack”)pgPstack(p);
+}
+
+//  DASHBOARD
+function pgDash(p){
+var g=mk(“div”,“stats”);p.appendChild(g);
+[{id:“d1”,l:“Universities”},{id:“d2”,l:“Programmes”},{id:“d3”,l:“Users”},
+{id:“d4”,l:“Revenue GHC”},{id:“d5”,l:“Pending Pays”},{id:“d6”,l:“AI Questions”}
+].forEach(function(s){
+var b=mk(“div”,“stat”);g.appendChild(b);
+var n=mk(“div”,“stat-n”,”…”);n.id=s.id;b.appendChild(n);
+b.appendChild(mk(“div”,“stat-l”,s.l));
+});
+var card=mk(“div”,“card”);p.appendChild(card);
+var ch=mk(“div”,“card-h”);card.appendChild(ch);ch.appendChild(mk(“h3”,null,“Quick Actions”));
+var cb=mk(“div”,“card-b”);cb.style.cssText=“display:flex;gap:6px;flex-wrap:wrap”;card.appendChild(cb);
+[[“Universities”,“unis”],[“Programmes”,“progs”],[“AI Inbox”,“ai”],[“Payments”,“pays”],
+[“Users”,“users”],[“Announcements”,“anns”],[“Appearance”,“appear”],[“Toggles”,“feats”],
+[“Site Text”,“stext”],[“Paystack”,“pstack”]
+].forEach(function(q){
+cb.appendChild(btn(q[0],“btn btn-s”,function(id){return function(){go(id);};}(q[1])));
+});
+GET(“universities”,“active=eq.true&select=id”).then(function(d){var e=ge(“d1”);if(e)e.textContent=d.length;}).catch(function(){});
+GET(“programmes”,“active=eq.true&select=id”).then(function(d){var e=ge(“d2”);if(e)e.textContent=d.length;}).catch(function(){});
+GET(“profiles”,“select=id”).then(function(d){var e=ge(“d3”);if(e)e.textContent=d.length;}).catch(function(){});
+GET(“payments”,“status=eq.success&select=amount”).then(function(d){var e=ge(“d4”);if(e)e.textContent=Math.round((d||[]).reduce(function(s,x){return s+(x.amount||0);},0)/100);}).catch(function(){});
+GET(“payments”,“status=eq.pending&select=id”).then(function(d){var e=ge(“d5”);if(e)e.textContent=d.length;}).catch(function(){});
+GET(“ai_inbox”,“status=eq.pending&select=id”).then(function(d){var e=ge(“d6”);if(e)e.textContent=d.length;}).catch(function(){});
+}
+
+//  UNIVERSITIES
+var UNI=[],PC={};
+function pgUnis(p){
+var sb=mk(“div”,“sb”);p.appendChild(sb);
+sb.appendChild(mk(“h2”,“ph”,“Universities”));
+sb.appendChild(btn(”+ Add”,“btn btn-p”,function(){uniMd(null);}));
+var si=mk(“input”);si.placeholder=“Search…”;si.style.cssText=“width:100%;padding:9px 12px;background:#1e1e32;border:1.5px solid rgba(255,255,255,.08);border-radius:8px;color:#f1f5f9;font-size:13px;font-family:Arial,sans-serif;outline:none;margin-bottom:12px;box-sizing:border-box”;
+p.appendChild(si);
+si.oninput=function(){drawUnis(si.value);};
+var card=mk(“div”,“card”);p.appendChild(card);
+var t=mk(“table”);card.appendChild(t);
+var h=mk(“thead”);t.appendChild(h);var hr=mk(“tr”);h.appendChild(hr);
+[“Code”,“Name”,“Type”,“Region”,“Progs”,“Status”,“Actions”].forEach(function(x){hr.appendChild(mk(“th”,null,x));});
+var tb=mk(“tbody”);tb.id=“utb”;t.appendChild(tb);
+tb.innerHTML=”<tr><td colspan='7' class='empty'>Loading…</td></tr>”;
+Promise.all([ALL(“universities”,“order=name.asc”),GET(“programmes”,“select=university_id”)]).then(function(r){
+UNI=r[0]||[];PC={};
+(r[1]||[]).forEach(function(x){PC[x.university_id]=(PC[x.university_id]||0)+1;});
+UNI.forEach(function(u){u._pc=PC[u.id]||0;});
+drawUnis(””);
+}).catch(function(e){toast(“Error: “+e.message);});
+}
+function drawUnis(q){
+var tb=ge(“utb”);if(!tb)return;
+var data=q?UNI.filter(function(u){return(u.name+u.code+(u.region||””)).toLowerCase().indexOf(q.toLowerCase())>=0;}):UNI;
+tb.innerHTML=””;
+if(!data.length){tb.innerHTML=”<tr><td colspan='7' class='empty'>None found</td></tr>”;return;}
+data.forEach(function(u){
+var tr=mk(“tr”);tb.appendChild(tr);
+var c1=mk(“td”);c1.appendChild(bx(u.code,“bp”));tr.appendChild(c1);
+var c2=mk(“td”,null,u.name);c2.style.cssText=“font-weight:600;color:#f1f5f9”;tr.appendChild(c2);
+var c3=mk(“td”);c3.appendChild(bx(u.type||”–”,u.type===“Public”?“bg”:“bo”));tr.appendChild(c3);
+tr.appendChild(mk(“td”,“muted”,u.region||”–”));
+tr.appendChild(mk(“td”,“muted”,String(u._pc)));
+var c6=mk(“td”);c6.appendChild(bx(u.active?“Active”:“Hidden”,u.active?“bg”:“br”));tr.appendChild(c6);
+var c7=mk(“td”);c7.style.whiteSpace=“nowrap”;tr.appendChild(c7);
+c7.appendChild(btn(“Edit”,“btn btn-gh btn-sm”,function(u){return function(){uniMd(u);};}(u)));
+c7.appendChild(sp());
+c7.appendChild(btn(u.active?“Hide”:“Show”,“btn btn-sm “+(u.active?“btn-o”:“btn-g”),function(u){return function(){
+PATCH(“universities”,u.id,{active:!u.active}).then(function(){toast(“Done”);go(“unis”);}).catch(function(e){toast(e.message);});
+};}(u)));
+c7.appendChild(sp());
+c7.appendChild(btn(“Del”,“btn btn-r btn-sm”,function(u){return function(){
+if(!confirm(“Delete “+u.name+”?”))return;
+DEL(“universities”,u.id).then(function(){toast(“Deleted”);go(“unis”);}).catch(function(e){toast(e.message);});
+};}(u)));
+});
+}
+function uniMd(u){
+openMd(function(b){
+b.appendChild(mk(“h3”,null,(u?“Edit”:“Add”)+” University”));
+var REGS=[“Greater Accra”,“Ashanti”,“Central”,“Eastern”,“Western”,“Northern”,“Upper East”,“Upper West”,“Volta”,“Bono”,“North East”,“Western North”];
+b.appendChild(fld(“Code *”,”<input id='u1' value='"+(u?u.code:"")+"'/>”));
+b.appendChild(fld(“Full Name *”,”<input id='u2' value='"+(u?u.name:"")+"'/>”));
+b.appendChild(fld(“Short Name”,”<input id='u3' value='"+(u?u.short_name||"":"")+"'/>”));
+var g=mk(“div”,“g2”);b.appendChild(g);
+var d1=mk(“div”);g.appendChild(d1);d1.appendChild(fld(“Type”,”<select id='u4'><option>Public</option><option>Private</option><option>Technical</option><option>Distance</option></select>”));
+var d2=mk(“div”);g.appendChild(d2);d2.appendChild(fld(“Founded”,”<input id='u5' type='number' value='"+(u?u.founded||"":"")+"'/>”));
+var d3=mk(“div”);g.appendChild(d3);d3.appendChild(fld(“City”,”<input id='u6' value='"+(u?u.location||"":"")+"'/>”));
+var d4=mk(“div”);g.appendChild(d4);d4.appendChild(fld(“Region”,”<select id='u7'>”+REGS.map(function(r){return”<option”+(u&&u.region===r?” selected”:””)+”>”+r+”</option>”;}).join(””)+”</select>”));
+b.appendChild(fld(“Website”,”<input id='u8' value='"+(u?u.website||"":"")+"'/>”));
+b.appendChild(fld(“About”,”<textarea id='u9'>”+(u?u.about||””:””)+”</textarea>”));
+if(u){var sel=ge(“u4”);if(sel)sel.value=u.type||“Public”;}
+b.appendChild(row(
+btn(u?“Save”:“Add”,“btn btn-p”,function(){
+var code=gv(“u1”).toUpperCase(),name=gv(“u2”);
+if(!code||!name){toast(“Code and name required”);return;}
+var bdy={code:code,name:name,short_name:gv(“u3”)||code,type:sv(“u4”),location:gv(“u6”),region:sv(“u7”),founded:parseInt(gv(“u5”))||null,website:gv(“u8”),about:gv(“u9”),active:true,updated_at:new Date().toISOString()};
+(u?PATCH(“universities”,u.id,bdy):POST(“universities”,bdy)).then(function(){toast(“Saved”);closeMd();go(“unis”);}).catch(function(e){toast(e.message);});
+}),
+btn(“Cancel”,“btn btn-gh”,closeMd)
+));
+});
+}
+
+//  PROGRAMMES
+var PRG=[],PU=[],FP=[],PG=0,PP=100;
+function pgProgs(p){
+var sb=mk(“div”,“sb”);p.appendChild(sb);
+sb.appendChild(mk(“h2”,“ph”,“Programmes”));
+sb.appendChild(btn(”+ Add”,“btn btn-p”,function(){prgMd(null);}));
+var fl=mk(“div”);fl.style.cssText=“display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px”;p.appendChild(fl);
+var si=mk(“input”);si.placeholder=“Search…”;si.style.cssText=“flex:1;min-width:140px;padding:9px 12px;background:#1e1e32;border:1.5px solid rgba(255,255,255,.08);border-radius:8px;color:#f1f5f9;font-size:13px;font-family:Arial,sans-serif;outline:none”;fl.appendChild(si);
+var uf=mk(“select”);uf.style.cssText=“width:140px;padding:9px 12px;background:#1e1e32;border:1.5px solid rgba(255,255,255,.08);border-radius:8px;color:#f1f5f9;font-size:13px;font-family:Arial,sans-serif;outline:none”;fl.appendChild(uf);
+uf.innerHTML=”<option value=''>All Unis</option>”;
+var df=mk(“select”);df.style.cssText=“width:110px;padding:9px 12px;background:#1e1e32;border:1.5px solid rgba(255,255,255,.08);border-radius:8px;color:#f1f5f9;font-size:13px;font-family:Arial,sans-serif;outline:none”;fl.appendChild(df);
+df.innerHTML=”<option value=''>All Degrees</option>”;
+[“BSc”,“BA”,“BEd”,“BTech”,“BBA”,“LLB”,“MBChB”,“HND”,“Diploma”,“Certificate”].forEach(function(d){var o=mk(“option”,null,d);df.appendChild(o);});
+var ct=mk(“p”,“muted”,””);ct.style.marginBottom=“8px”;p.appendChild(ct);
+var card=mk(“div”,“card”);p.appendChild(card);
+var t=mk(“table”);card.appendChild(t);
+var h=mk(“thead”);t.appendChild(h);var hr=mk(“tr”);h.appendChild(hr);
+[“Uni”,“Programme”,“Degree”,“Cut-off”,“Status”,“Actions”].forEach(function(x){hr.appendChild(mk(“th”,null,x));});
+var tb=mk(“tbody”);tb.id=“ptb”;t.appendChild(tb);
+var pg=mk(“div”,“pager”);pg.id=“ppg”;card.appendChild(pg);
+function filter(){
+var q=si.value.toLowerCase(),u=uf.value,d=df.value;
+FP=PRG.filter(function(x){return(!q||x.name.toLowerCase().indexOf(q)>=0)&&(!u||x.university_id===u)&&(!d||x.degree===d);});
+PG=0;drawProgs();ct.textContent=FP.length+” programmes”;
+}
+si.oninput=filter;uf.onchange=filter;df.onchange=filter;
+Promise.all([ALL(“programmes”,“order=name.asc”),ALL(“universities”,“select=id,code,name,short_name&order=name.asc”)]).then(function(r){
+PRG=r[0]||[];PU=r[1]||[];FP=PRG;
+PU.forEach(function(u){var o=mk(“option”,null,u.short_name||u.code);o.value=u.id;uf.appendChild(o);});
+ct.textContent=PRG.length+” total programmes”;drawProgs();
+}).catch(function(e){toast(“Error: “+e.message);});
+}
+function drawProgs(){
+var tb=ge(“ptb”),pg=ge(“ppg”);if(!tb)return;
+var um={};PU.forEach(function(u){um[u.id]=u.short_name||u.code;});
+var sl=FP.slice(PG*PP,(PG+1)*PP);
+tb.innerHTML=””;
+if(!sl.length){tb.innerHTML=”<tr><td colspan='6' class='empty'>None found</td></tr>”;}
+else sl.forEach(function(p){
+var tr=mk(“tr”);tb.appendChild(tr);
+var c1=mk(“td”);c1.appendChild(bx(um[p.university_id]||”?”,“bp”));tr.appendChild(c1);
+tr.appendChild(mk(“td”,null,p.name)).style.color=”#f1f5f9”;
+var c3=mk(“td”);c3.appendChild(bx(p.degree||”–”,“by”));tr.appendChild(c3);
+var c4=mk(“td”);if(p.cutoff){c4.textContent=p.cutoff;c4.style.color=”#f1f5f9”;}else{c4.textContent=“Not set”;c4.style.color=”#ef4444”;}tr.appendChild(c4);
+var c5=mk(“td”);c5.appendChild(bx(p.active?“Active”:“Hidden”,p.active?“bg”:“br”));tr.appendChild(c5);
+var c6=mk(“td”);c6.style.whiteSpace=“nowrap”;tr.appendChild(c6);
+c6.appendChild(btn(“Edit”,“btn btn-gh btn-sm”,function(p){return function(){prgMd(p);};}(p)));
+c6.appendChild(sp());
+c6.appendChild(btn(p.active?“Hide”:“Show”,“btn btn-sm “+(p.active?“btn-o”:“btn-g”),function(p){return function(){
+PATCH(“programmes”,p.id,{active:!p.active}).then(function(){p.active=!p.active;drawProgs();toast(“Done”);}).catch(function(e){toast(e.message);});
+};}(p)));
+c6.appendChild(sp());
+c6.appendChild(btn(“Del”,“btn btn-r btn-sm”,function(p){return function(){
+if(!confirm(“Delete?”))return;
+DEL(“programmes”,p.id).then(function(){PRG=PRG.filter(function(x){return x.id!==p.id;});FP=FP.filter(function(x){return x.id!==p.id;});drawProgs();toast(“Deleted”);}).catch(function(e){toast(e.message);});
+};}(p)));
+});
+if(pg){
+pg.innerHTML=””;
+var pages=Math.ceil(FP.length/PP);
+if(pages>1) for(var i=0;i<Math.min(pages,15);i++){
+var b=mk(“button”,“pbtn”+(i===PG?” on”:””),String(i+1));
+b.style.cssText=“padding:4px 9px;border-radius:6px;border:1px solid rgba(255,255,255,.07);background:”+(i===PG?”#7C3AED”:”#1e1e32”)+”;color:”+(i===PG?”#fff”:”#94a3b8”)+”;font-size:11px;cursor:pointer;font-family:Arial,sans-serif;margin:2px”;
+b.onclick=function(i){return function(){PG=i;drawProgs();};}(i);
+pg.appendChild(b);
+}
+}
+}
+function prgMd(p){
+openMd(function(b){
+b.appendChild(mk(“h3”,null,(p?“Edit”:“Add”)+” Programme”));
+var uopts=”<option value=''>Select university…</option>”+PU.map(function(u){return”<option value=’”+u.id+”’”+(p&&p.university_id===u.id?” selected”:””)+”>”+u.name+”</option>”;}).join(””);
+var DEGS=[“BSc”,“BA”,“BEd”,“BTech”,“BBA”,“LLB”,“MBChB”,“HND”,“Diploma”,“Certificate”];
+b.appendChild(fld(“University *”,”<select id='p1'>”+uopts+”</select>”));
+b.appendChild(fld(“Programme Name *”,”<input id='p2' value='"+(p?p.name:"")+"'/>”));
+var g=mk(“div”,“g3”);b.appendChild(g);
+var d1=mk(“div”);g.appendChild(d1);d1.appendChild(fld(“Degree”,”<select id='p3'>”+DEGS.map(function(d){return”<option”+(p&&p.degree===d?” selected”:””)+”>”+d+”</option>”;}).join(””)+”</select>”));
+var d2=mk(“div”);g.appendChild(d2);d2.appendChild(fld(“Duration”,”<input id='p4' value='"+(p?p.duration||"":"")+"'/>”));
+var d3=mk(“div”);g.appendChild(d3);d3.appendChild(fld(“Cut-off”,”<input id='p5' type='number' value='"+(p?p.cutoff||"":"")+"'/>”));
+b.appendChild(fld(“Required Tracks (comma separated)”,”<input id='p6' value='"+(p&&p.required_track?p.required_track.join(", "):"")+"'/>”));
+b.appendChild(fld(“Annual Fee”,”<input id='p7' value='"+(p?p.fee||"":"")+"'/>”));
+b.appendChild(fld(“Career Paths”,”<textarea id='p8'>”+(p?p.careers||””:””)+”</textarea>”));
+b.appendChild(row(
+btn(p?“Save”:“Add”,“btn btn-p”,function(){
+var uni=sv(“p1”),name=gv(“p2”);
+if(!uni||!name){toast(“University and name required”);return;}
+var tracks=gv(“p6”)?gv(“p6”).split(”,”).map(function(x){return x.trim();}).filter(Boolean):[];
+var bdy={university_id:uni,name:name,degree:sv(“p3”),duration:gv(“p4”),cutoff:parseInt(gv(“p5”))||null,required_track:tracks,fee:gv(“p7”),careers:gv(“p8”),active:true,updated_at:new Date().toISOString()};
+(p?PATCH(“programmes”,p.id,bdy):POST(“programmes”,bdy)).then(function(){toast(“Saved”);closeMd();go(“progs”);}).catch(function(e){toast(e.message);});
+}),
+btn(“Cancel”,“btn btn-gh”,closeMd)
+));
+});
+}
+
+//  AI INBOX
+var AIST=“pending”;
+function pgAI(p){
+var sb=mk(“div”,“sb”);p.appendChild(sb);
+sb.appendChild(mk(“h2”,“ph”,“AI Inbox”));
+var rf=mk(“div”);rf.style.cssText=“display:flex;gap:6px”;sb.appendChild(rf);
+var sel=mk(“select”);sel.style.cssText=“padding:7px 10px;background:#1e1e32;border:1.5px solid rgba(255,255,255,.08);border-radius:8px;color:#f1f5f9;font-size:12px;font-family:Arial,sans-serif;outline:none”;rf.appendChild(sel);
+[{v:“pending”,t:“Unanswered”},{v:“answered”,t:“Answered”},{v:””,t:“All”}].forEach(function(o){
+var op=mk(“option”,null,o.t);op.value=o.v;if(o.v===AIST)op.selected=true;sel.appendChild(op);
+});
+var list=mk(“div”);p.appendChild(list);
+rf.appendChild(btn(“Refresh”,“btn btn-s btn-sm”,function(){loadAI(list,sel.value);}));
+sel.onchange=function(){loadAI(list,sel.value);};
+loadAI(list,AIST);
+}
+function loadAI(list,status){
+AIST=status;list.innerHTML=”<p class='muted'>Loading…</p>”;
+GET(“ai_inbox”,(status?“status=eq.”+status+”&”:””)+“order=created_at.desc”).then(function(msgs){
+list.innerHTML=””;
+if(!msgs||!msgs.length){list.innerHTML=”<div class='empty'>No questions here.</div>”;return;}
+msgs.forEach(function(msg){
+var card=mk(“div”,“card”);card.style.marginBottom=“10px”;list.appendChild(card);
+var cb=mk(“div”,“card-b”);card.appendChild(cb);
+var top=mk(“div”);top.style.cssText=“display:flex;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px”;cb.appendChild(top);
+top.appendChild(bx(msg.status===“pending”?“Unanswered”:“Answered”,msg.status===“pending”?“br”:“bg”));
+var dt2=mk(“span”,“muted”,dt(msg.created_at));top.appendChild(dt2);
+var q=mk(“p”,null,msg.question||””);q.style.cssText=“color:#f1f5f9;font-size:13px;margin:0 0 6px 0”;cb.appendChild(q);
+var em=mk(“p”,null,msg.user_email||“Anonymous”);em.style.cssText=“color:#64748b;font-size:12px;margin:0 0 10px 0”;cb.appendChild(em);
+if(msg.reply&&msg.status===“answered”){
+var rep=mk(“div”,null,msg.reply);rep.style.cssText=“background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:8px;padding:10px;font-size:12px;color:#6ee7b7;margin-bottom:8px”;cb.appendChild(rep);
+}
+if(msg.status===“pending”){
+var rrow=mk(“div”);rrow.style.cssText=“display:flex;gap:8px”;cb.appendChild(rrow);
+var inp=mk(“input”);inp.placeholder=“Type reply…”;inp.style.cssText=“flex:1;padding:8px 10px;background:#1e1e32;border:1.5px solid rgba(255,255,255,.08);border-radius:8px;color:#f1f5f9;font-size:12px;font-family:Arial,sans-serif;outline:none”;rrow.appendChild(inp);
+rrow.appendChild(btn(“Send”,“btn btn-p btn-sm”,function(id,inp){return function(){
+if(!inp.value.trim()){toast(“Type a reply”);return;}
+PATCH(“ai_inbox”,id,{reply:inp.value.trim(),status:“answered”,replied_at:new Date().toISOString()}).then(function(){toast(“Sent”);loadAI(list,AIST);}).catch(function(e){toast(e.message);});
+};}(msg.id,inp)));
+rrow.appendChild(btn(“Dismiss”,“btn btn-gh btn-sm”,function(id){return function(){
+PATCH(“ai_inbox”,id,{status:“answered”,reply:”[Dismissed]”}).then(function(){toast(“Dismissed”);loadAI(list,AIST);}).catch(function(e){toast(e.message);});
+};}(msg.id)));
+} else {
+cb.appendChild(btn(“Reopen”,“btn btn-gh btn-sm”,function(id){return function(){
+PATCH(“ai_inbox”,id,{status:“pending”,reply:null}).then(function(){toast(“Reopened”);loadAI(list,AIST);}).catch(function(e){toast(e.message);});
+};}(msg.id)));
+}
+});
+}).catch(function(){
+list.innerHTML=”<div class='card'><div class='card-b'><p style='color:#fcd34d;margin-bottom:10px'>Run this SQL in Supabase to create AI Inbox table:</p>”
++”<pre style='background:#0f0f1a;padding:12px;border-radius:8px;font-size:11px;color:#94a3b8;white-space:pre-wrap'>CREATE TABLE IF NOT EXISTS public.ai_inbox (\n  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,\n  question text NOT NULL,\n  user_id uuid, user_email text,\n  status text DEFAULT ‘pending’,\n  reply text, replied_at timestamptz,\n  created_at timestamptz DEFAULT now()\n);\nGRANT ALL ON public.ai_inbox TO anon;</pre></div></div>”;
+});
+}
+
+//  SCHOLARSHIPS
+function pgSchols(p){
+var sb=mk(“div”,“sb”);p.appendChild(sb);
+sb.appendChild(mk(“h2”,“ph”,“Scholarships”));
+sb.appendChild(btn(”+ Add”,“btn btn-p”,function(){scholMd(null);}));
+var list=mk(“div”);list.innerHTML=”<p class='muted'>Loading…</p>”;p.appendChild(list);
+loadSchols(list);
+}
+function loadSchols(list){
+GET(“scholarships”,“order=name.asc”).then(function(d){
+list.innerHTML=””;
+if(!d||!d.length){list.innerHTML=”<div class='empty'>No scholarships yet.</div>”;return;}
+d.forEach(function(s){
+var card=mk(“div”,“card”);list.appendChild(card);
+var ch=mk(“div”,“card-h”);card.appendChild(ch);
+var info=mk(“div”);ch.appendChild(info);
+info.appendChild(mk(“h3”,null,s.name||“Scholarship”));
+info.appendChild(mk(“p”,“muted”,(s.organization||””)+(s.amount?” - “+s.amount:””)));
+var acts=mk(“div”);acts.style.cssText=“display:flex;gap:5px;align-items:center”;ch.appendChild(acts);
+acts.appendChild(btn(“Edit”,“btn btn-gh btn-sm”,function(s){return function(){scholMd(s);};}(s)));
+acts.appendChild(btn(“Del”,“btn btn-r btn-sm”,function(id){return function(){
+if(!confirm(“Delete?”))return;
+DEL(“scholarships”,id).then(function(){toast(“Deleted”);go(“schols”);}).catch(function(e){toast(e.message);});
+};}(s.id)));
+if(s.description){var cb=mk(“div”,“card-b muted”,s.description);card.appendChild(cb);}
+});
+}).catch(function(){});
+}
+function scholMd(s){
+openMd(function(b){
+b.appendChild(mk(“h3”,null,(s?“Edit”:“Add”)+” Scholarship”));
+b.appendChild(fld(“Name *”,”<input id='sc1' value='"+(s?s.name||"":"")+"'/>”));
+b.appendChild(fld(“Organisation”,”<input id='sc2' value='"+(s?s.organization||"":"")+"'/>”));
+b.appendChild(fld(“Amount”,”<input id='sc3' value='"+(s?s.amount||"":"")+"' placeholder='e.g. Full tuition'/>”));
+b.appendChild(fld(“Description”,”<textarea id='sc4'>”+(s?s.description||””:””)+”</textarea>”));
+b.appendChild(fld(“Eligibility”,”<textarea id='sc5'>”+(s?s.eligibility||””:””)+”</textarea>”));
+b.appendChild(fld(“Eligible Tracks (comma separated)”,”<input id='sc6' value='"+(s&&s.tracks?s.tracks.join(", "):"")+"'/>”));
+b.appendChild(row(
+btn(s?“Save”:“Add”,“btn btn-p”,function(){
+if(!gv(“sc1”)){toast(“Name required”);return;}
+var tracks=gv(“sc6”)?gv(“sc6”).split(”,”).map(function(x){return x.trim();}).filter(Boolean):[];
+var bdy={name:gv(“sc1”),organization:gv(“sc2”),amount:gv(“sc3”),description:gv(“sc4”),eligibility:gv(“sc5”),tracks:tracks};
+(s?PATCH(“scholarships”,s.id,bdy):POST(“scholarships”,bdy)).then(function(){toast(“Saved”);closeMd();go(“schols”);}).catch(function(e){toast(e.message);});
+}),
+btn(“Cancel”,“btn btn-gh”,closeMd)
+));
+});
+}
+
+//  NEWS
+function pgNews(p){
+var sb=mk(“div”,“sb”);p.appendChild(sb);
+sb.appendChild(mk(“h2”,“ph”,“News”));
+sb.appendChild(btn(”+ Add”,“btn btn-p”,function(){newsMd(null);}));
+var list=mk(“div”);list.innerHTML=”<p class='muted'>Loading…</p>”;p.appendChild(list);
+loadNews(list);
+}
+function loadNews(list){
+GET(“news”,“order=created_at.desc”).then(function(d){
+list.innerHTML=””;
+if(!d||!d.length){list.innerHTML=”<div class='empty'>No news yet.</div>”;return;}
+d.forEach(function(n){
+var card=mk(“div”,“card”);list.appendChild(card);
+var ch=mk(“div”,“card-h”);card.appendChild(ch);
+var info=mk(“div”);ch.appendChild(info);
+info.appendChild(mk(“h3”,null,n.title||“News”));
+info.appendChild(mk(“p”,“muted”,(n.category||“General”)+(n.urgent?” - URGENT”:””)+” - “+dt(n.created_at)));
+var acts=mk(“div”);acts.style.cssText=“display:flex;gap:5px;align-items:center”;ch.appendChild(acts);
+acts.appendChild(bx(n.published?“Published”:“Draft”,n.published?“bg”:“by”));
+if(n.urgent)acts.appendChild(bx(“Urgent”,“br”));
+acts.appendChild(btn(“Edit”,“btn btn-gh btn-sm”,function(n){return function(){newsMd(n);};}(n)));
+acts.appendChild(btn(“Del”,“btn btn-r btn-sm”,function(id){return function(){
+if(!confirm(“Delete?”))return;
+DEL(“news”,id).then(function(){toast(“Deleted”);go(“news”);}).catch(function(e){toast(e.message);});
+};}(n.id)));
+if(n.body){var cb=mk(“div”,“card-b muted”,n.body.slice(0,120)+(n.body.length>120?”…”:””));card.appendChild(cb);}
+});
+}).catch(function(){});
+}
+function newsMd(n){
+var CATS=[“General”,“Admissions”,“Results”,“Scholarships”,“Events”,“Announcements”];
+openMd(function(b){
+b.appendChild(mk(“h3”,null,(n?“Edit”:“Add”)+” News”));
+b.appendChild(fld(“Title *”,”<input id='n1' value='"+(n?n.title||"":"")+"'/>”));
+var g=mk(“div”,“g2”);b.appendChild(g);
+var d1=mk(“div”);g.appendChild(d1);d1.appendChild(fld(“Category”,”<select id='n2'>”+CATS.map(function(c){return”<option”+(n&&n.category===c?” selected”:””)+”>”+c+”</option>”;}).join(””)+”</select>”));
+var d2=mk(“div”);g.appendChild(d2);d2.appendChild(fld(“Source”,”<input id='n3' value='"+(n?n.source||"":"")+"'/>”));
+b.appendChild(fld(“Source URL”,”<input id='n4' value='"+(n?n.source_url||"":"")+"'/>”));
+b.appendChild(fld(“Content”,”<textarea id='n5'>”+(n?n.body||””:””)+”</textarea>”));
+var urg=mk(“div”);urg.style.cssText=“display:flex;align-items:center;gap:8px;margin-bottom:12px”;
+var chk=mk(“input”);chk.type=“checkbox”;chk.id=“n6”;chk.style.width=“auto”;if(n&&n.urgent)chk.checked=true;
+var lbl=mk(“label”,null,“Mark as Urgent”);lbl.htmlFor=“n6”;lbl.style.cssText=“color:#94a3b8;font-size:13px;cursor:pointer”;
+urg.appendChild(chk);urg.appendChild(lbl);b.appendChild(urg);
+b.appendChild(row(
+btn(n?“Update”:“Publish”,“btn btn-p”,function(){
+if(!gv(“n1”)){toast(“Title required”);return;}
+var bdy={title:gv(“n1”),category:sv(“n2”),body:gv(“n5”),source:gv(“n3”),source_url:gv(“n4”),urgent:ge(“n6”)?ge(“n6”).checked:false,published:true,published_at:new Date().toISOString()};
+(n?PATCH(“news”,n.id,bdy):POST(“news”,bdy)).then(function(){toast(“Saved”);closeMd();go(“news”);}).catch(function(e){toast(e.message);});
+}),
+btn(“Cancel”,“btn btn-gh”,closeMd)
+));
+});
+}
+
+//  FORMS
+var FU=[];
+function pgForms(p){
+var sb=mk(“div”,“sb”);p.appendChild(sb);
+sb.appendChild(mk(“h2”,“ph”,“Admission Forms”));
+sb.appendChild(btn(”+ Add”,“btn btn-p”,function(){formMd(null);}));
+var list=mk(“div”);list.innerHTML=”<p class='muted'>Loading…</p>”;p.appendChild(list);
+GET(“universities”,“select=id,name&order=name.asc”).then(function(u){FU=u||[];loadForms(list);});
+}
+function loadForms(list){
+Promise.all([GET(“admission_forms”,“order=deadline.asc”),GET(“universities”,“select=id,name”)]).then(function(r){
+list.innerHTML=””;
+var um={};(r[1]||[]).forEach(function(u){um[u.id]=u.name;});
+var forms=r[0]||[];
+if(!forms.length){list.innerHTML=”<div class='empty'>No forms yet.</div>”;return;}
+var card=mk(“div”,“card”);list.appendChild(card);
+var t=mk(“table”);card.appendChild(t);
+var h=mk(“thead”);t.appendChild(h);var hr=mk(“tr”);h.appendChild(hr);
+[“University”,“Year”,“Fee”,“Deadline”,“Status”,“Actions”].forEach(function(x){hr.appendChild(mk(“th”,null,x));});
+var tb=mk(“tbody”);t.appendChild(tb);
+forms.forEach(function(f){
+var tr=mk(“tr”);tb.appendChild(tr);
+tr.appendChild(mk(“td”,“muted”,um[f.university_id]||”–”));
+var c2=mk(“td”,null,f.academic_year||”–”);c2.style.color=”#f1f5f9”;tr.appendChild(c2);
+tr.appendChild(mk(“td”,null,f.fee||”–”));
+tr.appendChild(mk(“td”,“muted”,f.deadline?dt(f.deadline):”–”));
+var c5=mk(“td”);c5.appendChild(bx(f.status===“closed”?“Closed”:“Open”,f.status===“closed”?“br”:“bg”));tr.appendChild(c5);
+var c6=mk(“td”);c6.style.whiteSpace=“nowrap”;tr.appendChild(c6);
+c6.appendChild(btn(“Edit”,“btn btn-gh btn-sm”,function(f){return function(){formMd(f);};}(f)));
+c6.appendChild(sp());
+c6.appendChild(btn(f.status===“closed”?“Reopen”:“Close”,“btn btn-sm “+(f.status===“closed”?“btn-g”:“btn-o”),function(f){return function(){
+PATCH(“admission_forms”,f.id,{status:f.status===“closed”?“open”:“closed”,updated_at:new Date().toISOString()}).then(function(){toast(“Updated”);go(“forms”);}).catch(function(e){toast(e.message);});
+};}(f)));
+c6.appendChild(sp());
+c6.appendChild(btn(“Del”,“btn btn-r btn-sm”,function(id){return function(){
+if(!confirm(“Delete?”))return;
+DEL(“admission_forms”,id).then(function(){toast(“Deleted”);go(“forms”);}).catch(function(e){toast(e.message);});
+};}(f.id)));
+});
+}).catch(function(){});
+}
+function formMd(f){
+openMd(function(b){
+b.appendChild(mk(“h3”,null,(f?“Edit”:“Add”)+” Admission Form”));
+var uopts=”<option value=''>Select university…</option>”+FU.map(function(u){return”<option value=’”+u.id+”’”+(f&&f.university_id===u.id?” selected”:””)+”>”+u.name+”</option>”;}).join(””);
+b.appendChild(fld(“University *”,”<select id='f1'>”+uopts+”</select>”));
+b.appendChild(fld(“Academic Year”,”<input id='f2' value='"+(f?f.academic_year||"":"")+"' placeholder='e.g. 2025/2026'/>”));
+var g=mk(“div”,“g2”);b.appendChild(g);
+var d1=mk(“div”);g.appendChild(d1);d1.appendChild(fld(“Fee”,”<input id='f3' value='"+(f?f.fee||"":"")+"' placeholder='e.g. GHC 200'/>”));
+var d2=mk(“div”);g.appendChild(d2);d2.appendChild(fld(“Deadline”,”<input id='f4' type='date' value='"+(f?f.deadline||"":"")+"'/>”));
+b.appendChild(fld(“Portal URL”,”<input id='f5' value='"+(f?f.portal_url||"":"")+"'/>”));
+b.appendChild(fld(“Notes”,”<textarea id='f6'>”+(f?f.notes||””:””)+”</textarea>”));
+b.appendChild(row(
+btn(f?“Save”:“Add”,“btn btn-p”,function(){
+if(!sv(“f1”)){toast(“Select a university”);return;}
+var bdy={university_id:sv(“f1”),academic_year:gv(“f2”),fee:gv(“f3”),deadline:gv(“f4”)||null,portal_url:gv(“f5”),notes:gv(“f6”),status:“open”,updated_at:new Date().toISOString()};
+(f?PATCH(“admission_forms”,f.id,bdy):POST(“admission_forms”,bdy)).then(function(){toast(“Saved”);closeMd();go(“forms”);}).catch(function(e){toast(e.message);});
+}),
+btn(“Cancel”,“btn btn-gh”,closeMd)
+));
+});
+}
+
+//  ANNOUNCEMENTS
+function pgAnns(p){
+var sb=mk(“div”,“sb”);p.appendChild(sb);
+sb.appendChild(mk(“h2”,“ph”,“Announcements”));
+sb.appendChild(btn(”+ Add”,“btn btn-p”,function(){annMd(null);}));
+var list=mk(“div”);list.innerHTML=”<p class='muted'>Loading…</p>”;p.appendChild(list);
+loadAnns(list);
+}
+function loadAnns(list){
+GET(“announcements”,“order=starts_at.desc”).then(function(d){
+list.innerHTML=””;
+if(!d||!d.length){list.innerHTML=”<div class='empty'>No announcements yet.</div>”;return;}
+d.forEach(function(a){
+var card=mk(“div”,“card”);list.appendChild(card);
+var ch=mk(“div”,“card-h”);card.appendChild(ch);
+var left=mk(“div”);left.style.cssText=“display:flex;align-items:center;gap:8px”;ch.appendChild(left);
+var dot=mk(“span”);dot.style.cssText=“width:10px;height:10px;border-radius:50%;background:”+(a.color||”#7C3AED”)+”;flex-shrink:0”;left.appendChild(dot);
+var txt=mk(“span”,null,a.title||””);txt.style.cssText=“color:#f1f5f9;font-weight:600;font-size:13px”;left.appendChild(txt);
+var acts=mk(“div”);acts.style.cssText=“display:flex;gap:5px;align-items:center”;ch.appendChild(acts);
+acts.appendChild(bx(a.active?“Live”:“Hidden”,a.active?“bg”:“by”));
+acts.appendChild(btn(“Edit”,“btn btn-gh btn-sm”,function(a){return function(){annMd(a);};}(a)));
+acts.appendChild(btn(a.active?“Hide”:“Show”,“btn btn-sm “+(a.active?“btn-o”:“btn-g”),function(a){return function(){
+PATCH(“announcements”,a.id,{active:!a.active}).then(function(){toast(a.active?“Hidden”:“Live”);go(“anns”);}).catch(function(e){toast(e.message);});
+};}(a)));
+acts.appendChild(btn(“Del”,“btn btn-r btn-sm”,function(id){return function(){
+if(!confirm(“Delete?”))return;
+DEL(“announcements”,id).then(function(){toast(“Deleted”);go(“anns”);}).catch(function(e){toast(e.message);});
+};}(a.id)));
+});
+}).catch(function(){});
+}
+function annMd(a){
+openMd(function(b){
+b.appendChild(mk(“h3”,null,(a?“Edit”:“New”)+” Announcement”));
+b.appendChild(fld(“Title *”,”<input id='a1' value='"+(a?a.title||"":"")+"'/>”));
+b.appendChild(fld(“Body”,”<textarea id='a2'>”+(a?a.body||””:””)+”</textarea>”));
+var g=mk(“div”,“g2”);b.appendChild(g);
+var d1=mk(“div”);g.appendChild(d1);d1.appendChild(fld(“Color”,”<input id='a3' type='color' value='"+(a?a.color||"#7C3AED":"#7C3AED")+"'/>”));
+var d2=mk(“div”);g.appendChild(d2);d2.appendChild(fld(“Link URL”,”<input id='a4' value='"+(a?a.link||"":"")+"'/>”));
+b.appendChild(fld(“Link Text”,”<input id='a5' value='"+(a?a.link_text||"":"")+"' placeholder='e.g. Read more'/>”));
+var g2=mk(“div”,“g2”);b.appendChild(g2);
+var d3=mk(“div”);g2.appendChild(d3);d3.appendChild(fld(“Start Date”,”<input id='a6' type='datetime-local' value='"+(a&&a.starts_at?a.starts_at.slice(0,16):"")+"'/>”));
+var d4=mk(“div”);g2.appendChild(d4);d4.appendChild(fld(“End Date”,”<input id='a7' type='datetime-local' value='"+(a&&a.ends_at?a.ends_at.slice(0,16):"")+"'/>”));
+b.appendChild(row(
+btn(a?“Save”:“Add”,“btn btn-p”,function(){
+if(!gv(“a1”)){toast(“Title required”);return;}
+var col=ge(“a3”);
+var bdy={title:gv(“a1”),body:gv(“a2”),color:col?col.value:”#7C3AED”,link:gv(“a4”)||null,link_text:gv(“a5”)||null,starts_at:gv(“a6”)||new Date().toISOString(),ends_at:gv(“a7”)||null,active:true};
+(a?PATCH(“announcements”,a.id,bdy):POST(“announcements”,bdy)).then(function(){toast(“Saved”);closeMd();go(“anns”);}).catch(function(e){toast(e.message);});
+}),
+btn(“Cancel”,“btn btn-gh”,closeMd)
+));
+});
+}
+
+//  PAYMENTS
+function pgPays(p){
+var sb=mk(“div”,“sb”);p.appendChild(sb);
+sb.appendChild(mk(“h2”,“ph”,“Payments”));
+var sel=mk(“select”);sel.style.cssText=“padding:7px 10px;background:#1e1e32;border:1.5px solid rgba(255,255,255,.08);border-radius:8px;color:#f1f5f9;font-size:12px;font-family:Arial,sans-serif;outline:none”;sb.appendChild(sel);
+[{v:””,t:“All”},{v:“success”,t:“Successful”},{v:“pending”,t:“Pending”},{v:“failed”,t:“Failed”},{v:“refunded”,t:“Refunded”}].forEach(function(o){var op=mk(“option”,null,o.t);op.value=o.v;sel.appendChild(op);});
+var sum=mk(“p”,“muted”,””);sum.style.marginBottom=“12px”;p.appendChild(sum);
+var card=mk(“div”,“card”);p.appendChild(card);
+var t=mk(“table”);card.appendChild(t);
+var h=mk(“thead”);t.appendChild(h);var hr=mk(“tr”);h.appendChild(hr);
+[“Date”,“User”,“Amount”,“Plan”,“Status”,“Actions”].forEach(function(x){hr.appendChild(mk(“th”,null,x));});
+var tb=mk(“tbody”);tb.id=“paytb”;t.appendChild(tb);
+function load(){
+GET(“payments”,(sel.value?“status=eq.”+sel.value+”&”:””)+“order=created_at.desc”).then(function(d){
+var rev=(d||[]).filter(function(x){return x.status===“success”;}).reduce(function(s,x){return s+(x.amount||0);},0);
+sum.textContent=(d||[]).length+” records - GHC “+Math.round(rev/100)+” collected”;
+var tb=ge(“paytb”);if(!tb)return;tb.innerHTML=””;
+if(!d||!d.length){tb.innerHTML=”<tr><td colspan='6' class='empty'>No payments</td></tr>”;return;}
+d.forEach(function(pay){
+var tr=mk(“tr”);tb.appendChild(tr);
+tr.appendChild(mk(“td”,“muted”,dt(pay.created_at)));
+var c2=mk(“td”,null,pay.user_email||”–”);c2.style.color=”#f1f5f9”;tr.appendChild(c2);
+var c3=mk(“td”,null,“GHC “+((pay.amount||0)/100).toFixed(2));c3.style.cssText=“font-weight:700;color:#f1f5f9”;tr.appendChild(c3);
+var c4=mk(“td”);c4.appendChild(bx(pay.plan||”–”,“bb”));tr.appendChild(c4);
+var c5=mk(“td”);c5.appendChild(bx(pay.status,pay.status===“success”?“bg”:pay.status===“pending”?“bo”:pay.status===“refunded”?“bb”:“br”));tr.appendChild(c5);
+var c6=mk(“td”);tr.appendChild(c6);
+if(pay.status===“pending”) c6.appendChild(btn(“Approve”,“btn btn-g btn-sm”,function(id){return function(){PATCH(“payments”,id,{status:“success”,verified_at:new Date().toISOString()}).then(function(){toast(“Approved”);load();}).catch(function(e){toast(e.message);});};}(pay.id)));
+if(pay.status===“success”) c6.appendChild(btn(“Refund”,“btn btn-gh btn-sm”,function(id){return function(){if(!confirm(“Refund?”))return;PATCH(“payments”,id,{status:“refunded”}).then(function(){toast(“Refunded”);load();}).catch(function(e){toast(e.message);});};}(pay.id)));
+});
+}).catch(function(){});
+}
+sel.onchange=load;load();
+}
+
+//  USERS
+var US=[];
+function pgUsers(p){
+var sb=mk(“div”,“sb”);p.appendChild(sb);
+sb.appendChild(mk(“h2”,“ph”,“Users”));
+var si=mk(“input”);si.placeholder=“Search…”;si.style.cssText=“width:200px;padding:7px 10px;background:#1e1e32;border:1.5px solid rgba(255,255,255,.08);border-radius:8px;color:#f1f5f9;font-size:12px;font-family:Arial,sans-serif;outline:none”;sb.appendChild(si);
+var ct=mk(“p”,“muted”,””);ct.style.marginBottom=“12px”;p.appendChild(ct);
+var card=mk(“div”,“card”);p.appendChild(card);
+var t=mk(“table”);card.appendChild(t);
+var h=mk(“thead”);t.appendChild(h);var hr=mk(“tr”);h.appendChild(hr);
+[“Name”,“Email”,“Joined”,“Paid”,“Plan”,””].forEach(function(x){hr.appendChild(mk(“th”,null,x));});
+var tb=mk(“tbody”);tb.id=“ustb”;t.appendChild(tb);
+function draw(data){
+var tb=ge(“ustb”);if(!tb)return;tb.innerHTML=””;
+if(!data.length){tb.innerHTML=”<tr><td colspan='6' class='empty'>No users</td></tr>”;return;}
+data.forEach(function(u){
+var tr=mk(“tr”);tb.appendChild(tr);
+var c1=mk(“td”,null,u.full_name||u.name||”–”);c1.style.cssText=“color:#f1f5f9;font-weight:500”;tr.appendChild(c1);
+tr.appendChild(mk(“td”,“muted”,u.email||”–”));
+tr.appendChild(mk(“td”,“muted”,dt(u.created_at)));
+var c4=mk(“td”,null,“GHC “+((u._paid||0)/100).toFixed(2));c4.style.color=(u._paid||0)>0?”#10b981”:”#475569”;tr.appendChild(c4);
+var c5=mk(“td”);c5.appendChild(bx(u.plan||“free”,u.plan===“premium”?“bp”:u.plan===“basic”?“bg”:“by”));tr.appendChild(c5);
+tr.appendChild(mk(“td”)).appendChild(btn(“View”,“btn btn-gh btn-sm”,function(u){return function(){uView(u);};}(u)));
+});
+}
+si.oninput=function(){draw(US.filter(function(u){return((u.email||””)+(u.full_name||u.name||””)).toLowerCase().indexOf(si.value.toLowerCase())>=0;}));};
+Promise.all([GET(“profiles”,“order=created_at.desc”),GET(“payments”,“status=eq.success&select=user_id,amount”)]).then(function(r){
+var pm={};(r[1]||[]).forEach(function(x){pm[x.user_id]=(pm[x.user_id]||0)+(x.amount||0);});
+US=(r[0]||[]).map(function(u){u._paid=pm[u.id]||0;return u;});
+ct.textContent=US.length+” users”;draw(US);
+}).catch(function(){GET(“profiles”,“select=*”).then(function(d){US=d||[];draw(US);}).catch(function(){});});
+}
+function uView(u){
+GET(“payments”,“user_id=eq.”+u.id+”&order=created_at.desc”).then(function(pays){
+openMd(function(b){
+b.appendChild(mk(“h3”,null,u.full_name||u.email||“User”));
+[[“Email”,u.email||”–”],[“Joined”,dt(u.created_at)],[“Total Paid”,“GHC “+((u._paid||0)/100).toFixed(2)],[“Plan”,u.plan||“free”]].forEach(function(r2){
+var rw=mk(“div”,“lrow”);b.appendChild(rw);
+var info=mk(“div”);info.appendChild(mk(“h4”,null,r2[0]));rw.appendChild(info);
+rw.appendChild(mk(“span”,“muted”,r2[1]));
+});
+if(pays&&pays.length){
+b.appendChild(mk(“p”,null,“Payment History”)).style.cssText=“font-size:10px;font-weight:700;color:#475569;text-transform:uppercase;margin:12px 0 8px 0”;
+var t=mk(“table”);b.appendChild(t);
+var hd2=mk(“thead”);t.appendChild(hd2);var hr2=mk(“tr”);hd2.appendChild(hr2);
+[“Date”,“Amount”,“Status”].forEach(function(x){hr2.appendChild(mk(“th”,null,x));});
+var tb2=mk(“tbody”);t.appendChild(tb2);
+pays.forEach(function(pay){
+var tr=mk(“tr”);tb2.appendChild(tr);
+tr.appendChild(mk(“td”,null,dt(pay.created_at)));
+tr.appendChild(mk(“td”,null,“GHC “+((pay.amount||0)/100).toFixed(2)));
+var cs=mk(“td”);cs.appendChild(bx(pay.status,pay.status===“success”?“bg”:“bo”));tr.appendChild(cs);
+});
+}
+b.appendChild(row(btn(“Close”,“btn btn-gh”,closeMd)));
+});
+});
+}
+
+//  APPEARANCE
+function pgAppear(p){
+p.appendChild(mk(“h2”,“ph”,“Appearance”)).style.marginBottom=“14px”;
+var card=mk(“div”,“card”);p.appendChild(card);
+var ch=mk(“div”,“card-h”);card.appendChild(ch);ch.appendChild(mk(“h3”,null,“Colors”));
+var cb=mk(“div”,“card-b”);card.appendChild(cb);
+var g=mk(“div”,“g2”);cb.appendChild(g);
+[{id:“cp”,l:“Primary”,def:”#7C3AED”},{id:“ca”,l:“Accent”,def:”#EC4899”},{id:“cbg”,l:“Background”,def:”#0f0f1a”},{id:“cc”,l:“Card”,def:”#161625”}].forEach(function(c){
+var d=mk(“div”);g.appendChild(d);
+d.appendChild(fld(c.l,”<div style='display:flex;gap:8px'><input id='"+c.id+"' type='color' value='"+c.def+"' style='width:40px;height:36px;border:1.5px solid rgba(255,255,255,.08);border-radius:7px;cursor:pointer;background:#1e1e32;padding:2px'/><input id='"+c.id+"t' value='"+c.def+"' style='flex:1'/></div>”));
+});
+var grad=mk(“div”);grad.style.cssText=“height:32px;border-radius:8px;background:linear-gradient(135deg,#7C3AED,#EC4899);margin-bottom:12px”;cb.appendChild(grad);
+cb.appendChild(btn(“Save Colors”,“btn btn-p”,function(){
+Promise.all([SET(“primary_color”,ge(“cp”)?ge(“cp”).value:”#7C3AED”),SET(“accent_color”,ge(“ca”)?ge(“ca”).value:”#EC4899”),SET(“bg_color”,ge(“cbg”)?ge(“cbg”).value:”#0f0f1a”),SET(“card_color”,ge(“cc”)?ge(“cc”).value:”#161625”)]).then(function(){toast(“Saved”);}).catch(function(){toast(“Error”);});
+}));
+var card2=mk(“div”,“card”);p.appendChild(card2);
+var ch2=mk(“div”,“card-h”);card2.appendChild(ch2);ch2.appendChild(mk(“h3”,null,“Fonts”));
+var cb2=mk(“div”,“card-b”);card2.appendChild(cb2);
+var g2=mk(“div”,“g2”);cb2.appendChild(g2);
+var d1=mk(“div”);g2.appendChild(d1);d1.appendChild(fld(“Heading Font”,”<select id='fh'><option>Outfit</option><option>Inter</option><option>Poppins</option><option>Space Grotesk</option></select>”));
+var d2=mk(“div”);g2.appendChild(d2);d2.appendChild(fld(“Body Font”,”<select id='fb'><option>Inter</option><option>Outfit</option><option>Poppins</option><option>DM Sans</option></select>”));
+cb2.appendChild(btn(“Save Fonts”,“btn btn-p”,function(){
+Promise.all([SET(“font_heading”,sv(“fh”)),SET(“font_body”,sv(“fb”))]).then(function(){toast(“Saved”);}).catch(function(){toast(“Error”);});
+}));
+GET(“settings”,“key=in.("primary_color","accent_color","bg_color","card_color","font_heading","font_body")&select=key,value”).then(function(d){
+var map={primary_color:“cp”,accent_color:“ca”,bg_color:“cbg”,card_color:“cc”};
+(d||[]).forEach(function(s){
+if(map[s.key]){var e=ge(map[s.key]);if(e)e.value=s.value;var et=ge(map[s.key]+“t”);if(et)et.value=s.value;}
+if(s.key===“font_heading”&&ge(“fh”))ge(“fh”).value=s.value;
+if(s.key===“font_body”&&ge(“fb”))ge(“fb”).value=s.value;
+});
+}).catch(function(){});
+}
+
+//  SITE TEXT
+var STKEYS=[“hero_title”,“hero_sub”,“hero_desc”,“btn_primary”,“btn_secondary”,“site_name”,“tagline”,“whatsapp”,“contact_email”,“facebook”,“instagram”,“twitter”,“tiktok”,“basic_name”,“basic_price”,“basic_desc”,“basic_perks”,“premium_name”,“premium_price”,“premium_desc”,“premium_perks”,“premium_badge”,“bundle_name”,“bundle_price”,“bundle_desc”,“bundle_perks”,“bundle_badge”,“footer_tag”,“copyright”];
+function pgStext(p){
+p.appendChild(mk(“h2”,“ph”,“Edit Site Text”)).style.marginBottom=“14px”;
+function sec(title,keys){
+var card=mk(“div”,“card”);p.appendChild(card);
+var ch=mk(“div”,“card-h”);card.appendChild(ch);ch.appendChild(mk(“h3”,null,title));
+var cb=mk(“div”,“card-b”);card.appendChild(cb);
+keys.forEach(function(k){
+var lbl=k.replace(/_/g,” “).replace(/\b\w/g,function(c){return c.toUpperCase();});
+var isA=k.indexOf(“desc”)>=0||k.indexOf(“perks”)>=0;
+cb.appendChild(fld(lbl,isA?”<textarea id='st-"+k+"'></textarea>”:”<input id='st-"+k+"'/>”));
+});
+cb.appendChild(btn(“Save”,“btn btn-p”,function(ks){return function(){
+Promise.all(ks.map(function(k){var e=ge(“st-”+k);return e?SET(k,e.value):Promise.resolve();})).then(function(){toast(“Saved”);}).catch(function(){toast(“Error”);});
+};}(keys)));
+}
+sec(“Hero Section”,[“hero_title”,“hero_sub”,“hero_desc”,“btn_primary”,“btn_secondary”]);
+sec(“Branding and Contact”,[“site_name”,“tagline”,“whatsapp”,“contact_email”,“facebook”,“instagram”,“twitter”,“tiktok”]);
+sec(“Basic Plan GHC 12”,[“basic_name”,“basic_price”,“basic_desc”,“basic_perks”]);
+sec(“Premium Plan GHC 26”,[“premium_name”,“premium_price”,“premium_desc”,“premium_perks”,“premium_badge”]);
+sec(“Bundle Plan GHC 32”,[“bundle_name”,“bundle_price”,“bundle_desc”,“bundle_perks”,“bundle_badge”]);
+sec(“Footer”,[“footer_tag”,“copyright”]);
+GET(“settings”,“key=in.(”+STKEYS.map(function(k){return’”’+k+’”’;}).join(”,”)+”)”+”&select=key,value”).then(function(d){
+(d||[]).forEach(function(s){var e=ge(“st-”+s.key);if(e)e.value=s.value||””;});
+}).catch(function(){});
+}
+
+//  TOGGLES
+var FEATS=[
+{k:“maintenance_mode”,l:“Maintenance Mode”,d:“Show maintenance page to students”},
+{k:“ai_counsellor”,l:“AI Counsellor”,d:“Enable AI chat on student site”},
+{k:“payments_enabled”,l:“Payments Enabled”,d:“Allow students to pay”},
+{k:“registration_open”,l:“Registration Open”,d:“Allow new registrations”},
+{k:“show_scholarships”,l:“Scholarships Page”,d:“Show scholarships section”},
+{k:“show_news”,l:“News and Updates”,d:“Show news section”},
+{k:“show_rankings”,l:“University Rankings”,d:“Show ranking table”},
+{k:“show_compare”,l:“Compare Universities”,d:“Allow side by side comparison”},
+{k:“show_calculator”,l:“Aggregate Calculator”,d:“Show WASSCE calculator”},
+{k:“show_forms”,l:“Admission Forms”,d:“Show forms tracker”},
+{k:“announcement_bar”,l:“Announcement Bar”,d:“Show banner at top of site”}
+];
+function pgFeats(p){
+p.appendChild(mk(“h2”,“ph”,“Features and Toggles”)).style.marginBottom=“14px”;
+var card=mk(“div”,“card”);p.appendChild(card);
+var cb=mk(“div”,“card-b”);cb.id=“fbd”;cb.innerHTML=”<p class='muted'>Loading…</p>”;card.appendChild(cb);
+GET(“settings”,“key=in.(”+FEATS.map(function(f){return’”’+f.k+’”’;}).join(”,”)+”)”+”&select=key,value”).then(function(d){
+var vals={};(d||[]).forEach(function(s){vals[s.k]=s.value===“true”;});
+cb.innerHTML=””;
+FEATS.forEach(function(f){
+var rw=mk(“div”,“lrow”);cb.appendChild(rw);
+var info=mk(“div”);info.appendChild(mk(“h4”,null,f.l));info.appendChild(mk(“p”,null,f.d));rw.appendChild(info);
+var tog=mk(“button”,“tog”+(vals[f.k]?” on”:””));rw.appendChild(tog);
+tog.appendChild(mk(“div”,“tog-d”));
+tog.onclick=function(k,b){return function(){
+var on=b.classList.contains(“on”);b.classList.toggle(“on”);
+SET(k,String(!on)).then(function(){toast((!on?“Enabled”:“Disabled”));}).catch(function(){toast(“Error”);});
+};}(f.k,tog);
+});
+}).catch(function(){cb.innerHTML=”<p class='muted' style='color:#fcd34d'>Create settings table in Supabase first.</p>”;});
+}
+
+//  PAYSTACK
+function pgPstack(p){
+p.appendChild(mk(“h2”,“ph”,“Paystack Keys”)).style.marginBottom=“14px”;
+var card=mk(“div”,“card”);p.appendChild(card);
+var ch=mk(“div”,“card-h”);card.appendChild(ch);ch.appendChild(mk(“h3”,null,“API Keys”));
+var mode=mk(“span”,null,“Test Mode”);mode.id=“pkm”;mode.style.cssText=“font-size:12px;font-weight:700;color:#fcd34d”;ch.appendChild(mode);
+var cb=mk(“div”,“card-b”);card.appendChild(cb);
+var warn=mk(“div”,null,“Only the Public Key is used on the student site.”);warn.style.cssText=“background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);border-radius:8px;padding:10px;margin-bottom:14px;font-size:12px;color:#fcd34d”;cb.appendChild(warn);
+cb.appendChild(mk(“p”,null,“Test Keys”)).style.cssText=“font-size:10px;font-weight:700;color:#475569;text-transform:uppercase;margin-bottom:8px”;
+cb.appendChild(fld(“Test Public Key”,”<input id='pk1' placeholder='pk_test_...'/>”));
+cb.appendChild(fld(“Test Secret Key”,”<input id='pk2' type='password' placeholder='sk_test_...'/>”));
+cb.appendChild(mk(“p”,null,“Live Keys”)).style.cssText=“font-size:10px;font-weight:700;color:#475569;text-transform:uppercase;margin:12px 0 8px 0”;
+cb.appendChild(fld(“Live Public Key”,”<input id='pk3' placeholder='pk_live_...'/>”));
+cb.appendChild(fld(“Live Secret Key”,”<input id='pk4' type='password' placeholder='sk_live_...'/>”));
+var lrow=mk(“div”,“lrow”);lrow.style.margin=“10px 0”;cb.appendChild(lrow);
+var li=mk(“div”);li.appendChild(mk(“h4”,null,“Use Live Keys”));li.appendChild(mk(“p”,null,“Switch on when Paystack approved”));lrow.appendChild(li);
+var ltog=mk(“button”,“tog”);ltog.id=“pkt”;lrow.appendChild(ltog);ltog.appendChild(mk(“div”,“tog-d”));
+ltog.onclick=function(){
+ltog.classList.toggle(“on”);var live=ltog.classList.contains(“on”);
+var m=ge(“pkm”);if(m){m.textContent=live?“Live Mode”:“Test Mode”;m.style.color=live?”#6ee7b7”:”#fcd34d”;}
+};
+cb.appendChild(row(
+btn(“Save Keys”,“btn btn-p”,function(){
+var live=ge(“pkt”)&&ge(“pkt”).classList.contains(“on”);
+var saves=[SET(“pk_test_pub”,gv(“pk1”)),SET(“pk_live_pub”,gv(“pk3”)),SET(“pk_live_mode”,String(live))];
+if(gv(“pk2”))saves.push(SET(“pk_test_sec”,gv(“pk2”)));
+if(gv(“pk4”))saves.push(SET(“pk_live_sec”,gv(“pk4”)));
+Promise.all(saves).then(function(){toast(“Saved”);}).catch(function(){toast(“Error”);});
+}),
+btn(“Reload”,“btn btn-gh”,function(){pgPstack(ge(“page”));})
+));
+var card2=mk(“div”,“card”);p.appendChild(card2);
+var ch2=mk(“div”,“card-h”);card2.appendChild(ch2);ch2.appendChild(mk(“h3”,null,“Subscription Prices”));
+var cb2=mk(“div”,“card-b”);card2.appendChild(cb2);
+var g=mk(“div”,“g3”);cb2.appendChild(g);
+var d1=mk(“div”);g.appendChild(d1);d1.appendChild(fld(“Basic GHC”,”<input id='sp1' type='number' placeholder='12'/>”));
+var d2=mk(“div”);g.appendChild(d2);d2.appendChild(fld(“Premium GHC”,”<input id='sp2' type='number' placeholder='26'/>”));
+var d3=mk(“div”);g.appendChild(d3);d3.appendChild(fld(“Bundle GHC”,”<input id='sp3' type='number' placeholder='32'/>”));
+cb2.appendChild(btn(“Save Prices”,“btn btn-p”,function(){
+Promise.all([SET(“price_basic”,gv(“sp1”)),SET(“price_premium”,gv(“sp2”)),SET(“price_bundle”,gv(“sp3”))]).then(function(){toast(“Saved”);}).catch(function(){toast(“Error”);});
+}));
+GET(“settings”,“key=in.("pk_test_pub","pk_live_pub","pk_live_mode","price_basic","price_premium","price_bundle")&select=key,value”).then(function(d){
+var v={};(d||[]).forEach(function(s){v[s.key]=s.value;});
+if(v.pk_test_pub&&ge(“pk1”))ge(“pk1”).value=v.pk_test_pub;
+if(v.pk_live_pub&&ge(“pk3”))ge(“pk3”).value=v.pk_live_pub;
+if(v.price_basic&&ge(“sp1”))ge(“sp1”).value=v.price_basic;
+if(v.price_premium&&ge(“sp2”))ge(“sp2”).value=v.price_premium;
+if(v.price_bundle&&ge(“sp3”))ge(“sp3”).value=v.price_bundle;
+var live=v.pk_live_mode===“true”;
+var tog=ge(“pkt”);if(tog&&live)tog.classList.add(“on”);
+var m=ge(“pkm”);if(m){m.textContent=live?“Live Mode”:“Test Mode”;m.style.color=live?”#6ee7b7”:”#fcd34d”;}
+}).catch(function(){});
+}
+
+//  START
+buildTabs();
+go(“dash”);
+</script>
+
+</body>
+</html>
