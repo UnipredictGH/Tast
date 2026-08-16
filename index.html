@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>UniPredict Admin</title>
+<style>
+body{font-family:Arial,sans-serif;background:#0f0f1a;color:#e2e8f0;margin:0;}
+#top{background:#161625;padding:14px 18px;border-bottom:2px solid #7C3AED;display:flex;justify-content:space-between;align-items:center;}
+#top h1{font-size:16px;color:#a78bfa;margin:0;}
+#top a{color:#a78bfa;font-size:12px;text-decoration:none;border:1px solid rgba(124,58,237,.3);padding:5px 10px;border-radius:6px;}
+#tabs{background:#161625;display:flex;overflow-x:auto;padding:0 10px;border-bottom:1px solid rgba(255,255,255,.1);}
+#tabs::-webkit-scrollbar{display:none;}
+.tab{padding:12px 14px;font-size:13px;font-weight:600;color:#64748b;border:none;background:none;cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;font-family:Arial,sans-serif;}
+.tab.on{color:#a78bfa;border-bottom-color:#7C3AED;}
+#main{padding:20px;max-width:980px;margin:0 auto;}
+.card{background:#161625;border:1px solid rgba(255,255,255,.07);border-radius:10px;margin-bottom:14px;overflow:hidden;}
+.card-h{padding:13px 16px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+.card-h h3{font-size:14px;font-weight:800;color:#f1f5f9;margin:0;}
+.card-b{padding:16px;}
+.btn{display:inline-flex;align-items:center;padding:7px 13px;border-radius:7px;font-size:12px;font-weight:700;border:none;font-family:Arial,sans-serif;cursor:pointer;white-space:nowrap;}
+.btn-p{background:linear-gradient(135deg,#7C3AED,#EC4899);color:#fff;}
+.btn-s{background:rgba(124,58,237,.15);color:#a78bfa;border:1px solid rgba(124,58,237,.3);}
+.btn-r{background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.3);}
+.btn-g{background:rgba(16,185,129,.15);color:#6ee7b7;border:1px solid rgba(16,185,129,.3);}
+.btn-o{background:rgba(245,158,11,.15);color:#fcd34d;border:1px solid rgba(245,158,11,.3);}
+.btn-gh{background:transparent;color:#64748b;border:1px solid rgba(255,255,255,.1);}
+.btn-wa{background:#25D366;color:#fff;}
+.btn-sm{padding:4px 9px;font-size:11px;}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px;}
+@media(min-width:600px){.stats{grid-template-columns:repeat(3,1fr);}}
+@media(min-width:900px){.stats{grid-template-columns:repeat(6,1fr);}}
+.stat{background:#1e1e32;border-radius:10px;padding:14px 10px;text-align:center;cursor:pointer;}
+.stat:hover{border:1px solid rgba(124,58,237,.3);}
+.stat-n{font-size:24px;font-weight:900;color:#f1f5f9;}
+.stat-l{font-size:10px;color:#64748b;margin-top:3px;font-weight:600;text-transform:uppercase;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+th{padding:8px 10px;text-align:left;font-size:10px;font-weight:700;color:#475569;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.06);}
+td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.03);vertical-align:middle;}
+.bdg{display:inline-flex;padding:2px 7px;border-radius:99px;font-size:10px;font-weight:700;}
+.bp{background:rgba(124,58,237,.2);color:#a78bfa;}
+.bg{background:rgba(16,185,129,.15);color:#6ee7b7;}
+.br{background:rgba(239,68,68,.15);color:#fca5a5;}
+.bo{background:rgba(245,158,11,.15);color:#fcd34d;}
+.bb{background:rgba(59,130,246,.15);color:#93c5fd;}
+.by{background:rgba(255,255,255,.07);color:#94a3b8;}
+.field{margin-bottom:11px;}
+.field label{display:block;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;margin-bottom:4px;}
+.field input,.field select,.field textarea{width:100%;padding:9px 12px;background:#1e1e32;border:1.5px solid rgba(255,255,255,.08);border-radius:8px;color:#f1f5f9;font-size:13px;font-family:Arial,sans-serif;outline:none;box-sizing:border-box;}
+.field textarea{resize:vertical;min-height:68px;}
+.field input[type=color]{padding:3px;height:38px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+#ov{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;z-index:200;padding:16px;}
+#ov.open{display:flex;}
+#md{background:#161625;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:20px;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;position:relative;}
+#md h3{font-size:15px;font-weight:800;color:#f1f5f9;margin:0 0 14px 0;}
+#mcl{position:absolute;top:12px;right:14px;background:none;border:none;color:#475569;font-size:22px;cursor:pointer;padding:4px;}
+.tog{width:44px;height:24px;background:#334155;border-radius:99px;border:none;cursor:pointer;position:relative;display:inline-block;}
+.tog.on{background:#7C3AED;}
+.tog-d{width:18px;height:18px;background:#fff;border-radius:50%;position:absolute;top:3px;left:3px;transition:left .2s;pointer-events:none;}
+.tog.on .tog-d{left:23px;}
+#toasts{position:fixed;bottom:14px;right:14px;z-index:999;display:flex;flex-direction:column;gap:6px;pointer-events:none;}
+.toast{background:#1e1e32;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:10px 14px;font-size:12px;color:#f1f5f9;}
+.lrow{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04);gap:10px;}
+.lrow:last-child{border-bottom:none;}
+.lrow h4{font-size:13px;font-weight:600;color:#f1f5f9;margin:0;}
+.lrow p{font-size:11px;color:#475569;margin:2px 0 0 0;}
+.sb{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
+.ph{font-size:16px;font-weight:800;color:#f1f5f9;margin:0;}
+.muted{color:#64748b;font-size:12px;}
+.empty{text-align:center;padding:36px;color:#475569;}
+.pager{display:flex;gap:4px;flex-wrap:wrap;padding:10px 14px;border-top:1px solid rgba(255,255,255,.06);}
+.pbtn{padding:4px 9px;border-radius:6px;border:1px solid rgba(255,255,255,.07);background:#1e1e32;color:#94a3b8;font-size:11px;cursor:pointer;font-family:Arial,sans-serif;}
+.pbtn.on{background:#7C3AED;color:#fff;border-color:#7C3AED;}
+.ai-auto{font-size:11px;color:#475569;margin-left:8px;}
+</style>
+</head>
+<body>
+<div id="top">
+  <h1>UniPredict Ghana Admin</h1>
+  <a href="https://uni-predict.netlify.app" target="_blank">Student Site</a>
+</div>
+<div id="tabs"></div>
+<div id="main"></div>
+<div id="toasts"></div>
+<div id="ov"><div id="md"><button id="mcl">X</button><div id="mbd"></div></div></div>
+<script src="admin.js"></script>
+</body>
+</html>
