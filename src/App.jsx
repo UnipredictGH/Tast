@@ -182,8 +182,8 @@ const Btn = ({ children, variant = "primary", size = "md", full = false, onClick
   const base = "inline-flex items-center justify-center font-semibold rounded-full select-none outline-none border-0 transition-all duration-100 active:scale-95 active:opacity-80";
   const sizes = { sm:"px-3 py-1.5 text-[11px]", md:"px-4 py-2 text-[11.5px]", lg:"px-5 py-2.5 text-[12px]" };
   const variants = {
-    primary: "bg-gradient-to-r from-violet-600 to-pink-500 text-white",
-    outline: "bg-white text-violet-600 border-2 border-violet-600",
+    primary: "bg-gradient-to-r from-violet-700 to-pink-500 text-white",
+    outline: "bg-white text-violet-700 border-2 border-violet-600",
     ghost: "bg-white text-gray-800 border border-violet-200",
   };
   return (
@@ -191,7 +191,7 @@ const Btn = ({ children, variant = "primary", size = "md", full = false, onClick
       onClick={onClick}
       disabled={disabled}
       style={style}
-      className={`${base} ${sizes[size]} ${variants[variant]} ${full ? "w-full" : ""} ${disabled ? "opacity-40 pointer-events-none" : "cursor-pointer"}`}
+      className={`${base} ${sizes[size]} ${variants[variant]} ${full ? "w-full" : ""} ${disabled ? "opacity-90 pointer-events-none" : "cursor-pointer"}`}
     >
       {children}
     </button>
@@ -203,7 +203,7 @@ const Tag = ({ children }) => (
 );
 
 const Card = ({ children, className = "", onClick }) => (
-  <div onClick={onClick} className={`bg-white border border-violet-100 rounded-2xl shadow-sm ${onClick ? "cursor-pointer active:scale-98 active:opacity-90 transition-all" : ""} ${className}`}>
+  <div onClick={onClick} className={`bg-white border border-violet-200 rounded-2xl shadow-sm ${onClick ? "cursor-pointer active:scale-98 active:opacity-90 transition-all" : ""} ${className}`}>
     {children}
   </div>
 );
@@ -228,8 +228,8 @@ const GradePicker = ({ value, onChange }) => (
         onClick={() => onChange(value === g ? "" : g)}
         className={`flex-1 min-w-[32px] py-1.5 rounded-lg text-[11px] font-bold border transition-all active:scale-90 cursor-pointer select-none outline-none
           ${value === g
-            ? "bg-gradient-to-r from-violet-600 to-pink-500 text-white border-transparent"
-            : "bg-white text-gray-600 border-violet-100 active:border-violet-400"
+            ? "bg-gradient-to-r from-violet-700 to-pink-500 text-white border-transparent"
+            : "bg-white text-gray-600 border-violet-200 active:border-violet-400"
           }`}
       >
         {g}
@@ -264,39 +264,39 @@ function Nav({ page, setPage }) {
   return (
     <>
       {/* Announcement bar */}
-      <div className="bg-gradient-to-r from-violet-600 to-pink-500 px-4 py-2 flex justify-between items-center gap-2">
+      <div className="bg-gradient-to-r from-violet-700 to-pink-500 px-4 py-2 flex justify-between items-center gap-2">
         <span className="text-white text-[11px] font-semibold leading-tight">🎓 2025/2026 Admissions Open — UG, KNUST, UCC, GIMPA accepting applications</span>
-        <button onClick={() => nav("forms")} className="text-white text-[10px] font-bold underline whitespace-nowrap cursor-pointer active:opacity-70 select-none outline-none border-0 bg-transparent">View All →</button>
+        <button onClick={() => nav("forms")} className="text-white text-[10px] font-bold underline whitespace-nowrap cursor-pointer active:opacity-90 select-none outline-none border-0 bg-transparent">View All →</button>
       </div>
       {/* Nav bar */}
-      <nav className="sticky top-0 z-40 bg-white border-b border-violet-100 shadow-sm">
+      <nav className="sticky top-0 z-40 bg-white border-b border-violet-200 shadow-sm">
         <div className="flex items-center justify-between px-4 h-12">
-          <button onClick={() => nav("home")} className="flex items-center gap-2 cursor-pointer active:opacity-70 select-none outline-none border-0 bg-transparent">
-            <div className="w-7 h-7 bg-gradient-to-br from-violet-600 to-pink-500 rounded-lg flex items-center justify-center text-base">🎓</div>
-            <span className="font-black text-[15px] text-gray-900">Uni<span className="bg-gradient-to-r from-violet-600 to-pink-500 bg-clip-text text-transparent">Predict</span></span>
+          <button onClick={() => nav("home")} className="flex items-center gap-2 cursor-pointer active:opacity-90 select-none outline-none border-0 bg-transparent">
+            <div className="w-7 h-7 bg-gradient-to-br from-violet-700 to-pink-500 rounded-lg flex items-center justify-center text-base">🎓</div>
+            <span className="font-black text-[15px] text-gray-900">Uni<span className="bg-gradient-to-r from-violet-700 to-pink-500 bg-clip-text text-transparent">Predict</span></span>
           </button>
           <div className="hidden md:flex items-center gap-1">
             {NAV_LINKS.map(l => (
-              <button key={l.id} onClick={() => nav(l.id)} className="px-2.5 py-1.5 rounded-lg text-[11.5px] font-medium text-gray-500 hover:text-violet-700 hover:bg-violet-50 cursor-pointer select-none outline-none border-0 bg-transparent transition-all">{l.label}</button>
+              <button key={l.id} onClick={() => nav(l.id)} className="px-2.5 py-1.5 rounded-lg text-[11.5px] font-medium text-gray-700 hover:text-violet-700 hover:bg-violet-100 cursor-pointer select-none outline-none border-0 bg-transparent transition-all">{l.label}</button>
             ))}
           </div>
           <div className="hidden md:flex items-center gap-2">
             <Btn variant="ghost" size="sm" onClick={() => nav("checker")}>Sign In</Btn>
             <Btn size="sm" onClick={() => nav("checker")}>Get Started →</Btn>
           </div>
-          <button onClick={() => setMenuOpen(o => !o)} className="md:hidden text-xl text-gray-800 cursor-pointer active:opacity-60 select-none outline-none border-0 bg-transparent px-1">☰</button>
+          <button onClick={() => setMenuOpen(o => !o)} className="md:hidden text-xl text-gray-800 cursor-pointer active:opacity-85 select-none outline-none border-0 bg-transparent px-1">☰</button>
         </div>
       </nav>
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="fixed inset-0 top-[calc(2.5rem+34px)] z-30 bg-violet-50/98 backdrop-blur overflow-y-auto pb-20">
+        <div className="fixed inset-0 top-[calc(2.5rem+34px)] z-30 bg-violet-100/98 backdrop-blur overflow-y-auto pb-20">
           {ALL_LINKS.map(l => (
             <button key={l.id} onClick={() => nav(l.id)}
               className="w-full flex items-center gap-3 px-5 py-3.5 text-[13px] font-medium text-gray-800 active:bg-violet-100 active:text-violet-700 border-l-4 border-transparent active:border-violet-600 cursor-pointer select-none outline-none border-0 bg-transparent text-left transition-all">
               {l.label}
             </button>
           ))}
-          <div className="mx-4 mt-3 p-4 bg-gradient-to-r from-violet-600 to-pink-500 rounded-2xl">
+          <div className="mx-4 mt-3 p-4 bg-gradient-to-r from-violet-700 to-pink-500 rounded-2xl">
             <p className="text-white font-bold text-[12px] mb-1">🎓 Check Your Eligibility Now</p>
             <p className="text-white/80 text-[11px] mb-3">Basic · Premium · Bundle</p>
             <Btn full onClick={() => nav("checker")} style={{ background:"#fff", color:"#7C3AED" }}>Start My Check →</Btn>
@@ -314,23 +314,23 @@ function HomePage({ setPage, unis, progs }) {
   return (
     <div>
       {/* Ticker */}
-      <div className="overflow-hidden bg-white border-b border-violet-100 py-2">
+      <div className="overflow-hidden bg-white border-b border-violet-200 py-2">
         <div className="flex gap-10 animate-[ticker_40s_linear_infinite] w-max">
           {tickerAll.map((t,i) => (
-            <span key={i} className="text-[11px] text-gray-500 whitespace-nowrap flex items-center gap-2 before:content-['●'] before:text-violet-300 before:text-[6px]">{t}</span>
+            <span key={i} className="text-[11px] text-gray-700 whitespace-nowrap flex items-center gap-2 before:content-['●'] before:text-violet-300 before:text-[6px]">{t}</span>
           ))}
         </div>
       </div>
       {/* Hero */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-violet-50 via-pink-50 to-violet-100 px-4 pt-10 pb-14">
-        <div className="absolute inset-0 opacity-40" style={{backgroundImage:"linear-gradient(rgba(124,58,237,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(124,58,237,.07) 1px,transparent 1px)",backgroundSize:"32px 32px"}}/>
+      <div className="relative overflow-hidden bg-gradient-to-br from-violet-100 via-pink-100 to-violet-200 px-4 pt-10 pb-14">
+        <div className="absolute inset-0 opacity-90" style={{backgroundImage:"linear-gradient(rgba(124,58,237,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(124,58,237,.07) 1px,transparent 1px)",backgroundSize:"32px 32px"}}/>
         <div className="relative max-w-lg mx-auto">
-          <div className="inline-flex items-center gap-1.5 bg-white border border-violet-200 rounded-full px-3 py-1 text-[11px] font-bold text-violet-600 mb-4 shadow-sm">● Ghana's #1 University Admission Platform</div>
+          <div className="inline-flex items-center gap-1.5 bg-white border border-violet-200 rounded-full px-3 py-1 text-[11px] font-bold text-violet-700 mb-4 shadow-sm">● Ghana's #1 University Admission Platform</div>
           <h1 className="font-black text-[28px] leading-tight text-gray-900 mb-3" style={{fontFamily:"Outfit,Arial,sans-serif",letterSpacing:"-.3px"}}>
             Predict. Match.<br/>
-            <span className="bg-gradient-to-r from-violet-600 to-pink-500 bg-clip-text text-transparent">Achieve.</span>
+            <span className="bg-gradient-to-r from-violet-700 to-pink-500 bg-clip-text text-transparent">Achieve.</span>
           </h1>
-          <p className="text-[12px] text-gray-500 leading-relaxed mb-5 max-w-sm">
+          <p className="text-[12px] text-gray-700 leading-relaxed mb-5 max-w-sm">
             Enter your WASSCE results and instantly discover every university and programme you qualify for across <strong className="text-gray-700">{unis.length || 58} institutions</strong>. Subject-verified. Ranked by best match.
           </p>
           <div className="flex flex-col gap-2 max-w-xs mb-4">
@@ -339,7 +339,7 @@ function HomePage({ setPage, unis, progs }) {
           </div>
           <div className="flex flex-wrap gap-1.5">
             {["✓ Real subject checks",`✓ ${progs.length || "1,000"}+ programmes`,"✓ 2026 cut-off data","✓ Free to browse"].map(t => (
-              <span key={t} className="text-[10.5px] text-gray-500 bg-white/80 rounded-full px-2.5 py-1 border border-violet-100">{t}</span>
+              <span key={t} className="text-[10.5px] text-gray-700 bg-white/80 rounded-full px-2.5 py-1 border border-violet-200">{t}</span>
             ))}
           </div>
         </div>
@@ -350,14 +350,14 @@ function HomePage({ setPage, unis, progs }) {
         <div className="max-w-lg mx-auto text-center">
           <Tag>How It Works</Tag>
           <h2 className="font-black text-[18px] text-gray-900 mb-1" style={{fontFamily:"Outfit,Arial,sans-serif"}}>3 Steps to Know Your Options</h2>
-          <p className="text-[11.5px] text-gray-400 mb-6">From results to university matches in under 2 minutes</p>
+          <p className="text-[11.5px] text-gray-600 mb-6">From results to university matches in under 2 minutes</p>
           <div className="grid grid-cols-3 gap-3">
             {[{n:1,e:"📝",t:"Enter Grades",d:"Select your SHS track and enter WASSCE results."},{n:2,e:"💳",t:"Pay Securely",d:"MTN MoMo, Vodafone, Card."},{n:3,e:"🎯",t:"Get Results",d:"Every programme ranked by eligibility."}].map(s => (
-              <div key={s.n} className="bg-violet-50 rounded-xl p-3 text-center">
-                <div className="w-8 h-8 bg-gradient-to-br from-violet-600 to-pink-500 rounded-full flex items-center justify-center text-white font-black text-[13px] mx-auto mb-2 shadow">{s.n}</div>
+              <div key={s.n} className="bg-violet-100 rounded-xl p-3 text-center">
+                <div className="w-8 h-8 bg-gradient-to-br from-violet-700 to-pink-500 rounded-full flex items-center justify-center text-white font-black text-[13px] mx-auto mb-2 shadow">{s.n}</div>
                 <div className="text-[20px] mb-1">{s.e}</div>
                 <div className="font-bold text-[11.5px] text-gray-800 mb-1">{s.t}</div>
-                <div className="text-[10.5px] text-gray-400 leading-snug">{s.d}</div>
+                <div className="text-[10.5px] text-gray-600 leading-snug">{s.d}</div>
               </div>
             ))}
           </div>
@@ -366,7 +366,7 @@ function HomePage({ setPage, unis, progs }) {
       </div>
 
       {/* Features */}
-      <div className="bg-violet-50 px-4 py-10">
+      <div className="bg-violet-100 px-4 py-10">
         <div className="max-w-lg mx-auto">
           <div className="text-center mb-5">
             <Tag>Everything You Need</Tag>
@@ -384,7 +384,7 @@ function HomePage({ setPage, unis, progs }) {
               <Card key={f.t} className="p-3" onClick={() => setPage(f.pg)}>
                 <div className="w-9 h-9 rounded-xl bg-violet-100 flex items-center justify-center text-[18px] mb-2">{f.icon}</div>
                 <div className="font-bold text-[11.5px] text-gray-900 mb-1">{f.t}</div>
-                <div className="text-[10.5px] text-gray-400 leading-snug">{f.d}</div>
+                <div className="text-[10.5px] text-gray-600 leading-snug">{f.d}</div>
               </Card>
             ))}
           </div>
@@ -392,7 +392,7 @@ function HomePage({ setPage, unis, progs }) {
       </div>
 
       {/* Pricing */}
-      <div className="bg-gradient-to-br from-violet-600 to-pink-500 px-4 py-10">
+      <div className="bg-gradient-to-br from-violet-700 to-pink-500 px-4 py-10">
         <div className="max-w-lg mx-auto">
           <div className="text-center mb-5">
             <h2 className="font-black text-[18px] text-white mb-1" style={{fontFamily:"Outfit,Arial,sans-serif"}}>Simple, Affordable Pricing</h2>
@@ -406,7 +406,7 @@ function HomePage({ setPage, unis, progs }) {
             ].map(plan => (
               <button key={plan.n} onClick={() => setPage("checker")}
                 className={`relative rounded-2xl p-3 text-center cursor-pointer active:scale-95 transition-all select-none outline-none border-0 ${plan.pop ? "bg-white/25 border-2 border-white/80" : "bg-white/15 border border-white/25"}`}>
-                {plan.pop && <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-white text-violet-600 text-[9px] font-black px-2 py-0.5 rounded-full whitespace-nowrap">POPULAR</div>}
+                {plan.pop && <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-white text-violet-700 text-[9px] font-black px-2 py-0.5 rounded-full whitespace-nowrap">POPULAR</div>}
                 <div className="text-[20px] mb-1">{plan.icon}</div>
                 <div className="font-black text-[20px] text-white leading-none mb-0.5">GHC{plan.p}</div>
                 <div className="text-white/90 font-bold text-[11px]">{plan.n}</div>
@@ -498,32 +498,32 @@ function CheckerPage({ unis, progs, schols, paystackKey }) {
     <div className="max-w-lg mx-auto px-4 py-4">
 
       {/* Header */}
-      <div className="bg-white border border-violet-100 rounded-2xl shadow-sm p-3 mb-3 flex gap-3 items-start">
+      <div className="bg-white border border-violet-200 rounded-2xl shadow-sm p-3 mb-3 flex gap-3 items-start">
         <div className="text-[28px] flex-shrink-0">🎓</div>
         <div>
           <h2 className="font-black text-[14px] text-gray-900 mb-0.5" style={{fontFamily:"Outfit,Arial,sans-serif"}}>University Eligibility Checker</h2>
-          <p className="text-[10.5px] text-gray-400">Full subject verification · Ranked results · 58 universities</p>
+          <p className="text-[10.5px] text-gray-600">Full subject verification · Ranked results · 58 universities</p>
         </div>
       </div>
 
       {/* Wizard progress bar */}
-      <div className="bg-white border border-violet-100 rounded-2xl shadow-sm p-3 mb-3 overflow-x-auto" style={{scrollbarWidth:"none"}}>
+      <div className="bg-white border border-violet-200 rounded-2xl shadow-sm p-3 mb-3 overflow-x-auto" style={{scrollbarWidth:"none"}}>
         <div className="flex items-center gap-1 w-max">
           {STEPS.map((s,i) => {
             const n=i+1, done=n<step, active=n===step;
             return (
               <div key={n} className="flex items-center gap-1 flex-shrink-0">
                 <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black border-2 flex-shrink-0
-                  ${done?"bg-white border-violet-600 text-violet-600"
-                  :active?"bg-gradient-to-br from-violet-600 to-pink-500 border-transparent text-white"
+                  ${done?"bg-white border-violet-600 text-violet-700"
+                  :active?"bg-gradient-to-br from-violet-700 to-pink-500 border-transparent text-white"
                   :"bg-white border-violet-200 text-violet-300"}`}>
                   {done?"✓":n}
                 </div>
                 <span className={`text-[9.5px] font-semibold whitespace-nowrap
-                  ${active?"text-violet-600 font-bold":done?"text-violet-500":"text-gray-300"}`}>
+                  ${active?"text-violet-700 font-bold":done?"text-violet-500":"text-gray-700"}`}>
                   {s}
                 </span>
-                {i<5 && <div className={`w-3 h-0.5 flex-shrink-0 ${done?"bg-violet-500":"bg-violet-100"}`}/>}
+                {i<5 && <div className={`w-3 h-0.5 flex-shrink-0 ${done?"bg-violet-1000":"bg-violet-100"}`}/>}
               </div>
             );
           })}
@@ -534,16 +534,16 @@ function CheckerPage({ unis, progs, schols, paystackKey }) {
       {step === 1 && (
         <div>
           <h2 className="font-black text-[14px] text-gray-900 mb-1" style={{fontFamily:"Outfit,Arial,sans-serif"}}>What is your SHS Track?</h2>
-          <p className="text-[11px] text-gray-400 mb-4">Your track determines which programmes you qualify for.</p>
+          <p className="text-[11px] text-gray-600 mb-4">Your track determines which programmes you qualify for.</p>
           <div className="grid grid-cols-2 gap-2 mb-4">
             {Object.entries(TRACKS).map(([name,t]) => (
               <button key={name}
                 onClick={() => { setTrack(name); setEl([]); setEg({}); }}
                 className={`rounded-xl p-3 text-left cursor-pointer active:scale-95 transition-all select-none outline-none border-2
-                  ${track===name?"border-violet-600 bg-violet-50 shadow-sm":"border-violet-100 bg-white"}`}>
+                  ${track===name?"border-violet-600 bg-violet-100 shadow-sm":"border-violet-200 bg-white"}`}>
                 <div className="text-[20px] mb-1">{t.icon}</div>
                 <div className="font-bold text-[11px] text-gray-900 mb-0.5">{name}</div>
-                <div className="text-[10px] text-gray-400 leading-snug">{t.sub}</div>
+                <div className="text-[10px] text-gray-600 leading-snug">{t.sub}</div>
               </button>
             ))}
           </div>
@@ -555,7 +555,7 @@ function CheckerPage({ unis, progs, schols, paystackKey }) {
       {step === 2 && (
         <div>
           <h2 className="font-black text-[14px] text-gray-900 mb-1" style={{fontFamily:"Outfit,Arial,sans-serif"}}>What Are You Looking For?</h2>
-          <p className="text-[11px] text-gray-400 mb-3">Choose the type of programme you want to pursue.</p>
+          <p className="text-[11px] text-gray-600 mb-3">Choose the type of programme you want to pursue.</p>
           <div className="space-y-2 mb-4">
             {[
               ["Degree","Bachelor Degree","BSc, BA, BEd, LLB, MBChB etc."],
@@ -566,12 +566,12 @@ function CheckerPage({ unis, progs, schols, paystackKey }) {
               <button key={id}
                 onClick={() => setProgType(id)}
                 className={`w-full flex items-center gap-3 p-3 rounded-xl border-2 text-left cursor-pointer active:scale-98 transition-all select-none outline-none
-                  ${progType===id?"border-violet-600 bg-violet-50":"border-violet-100 bg-white"}`}>
+                  ${progType===id?"border-violet-600 bg-violet-100":"border-violet-200 bg-white"}`}>
                 <div className={`w-4 h-4 rounded-full border-2 flex-shrink-0
                   ${progType===id?"border-violet-600 bg-violet-600":"border-violet-200"}`}/>
                 <div>
                   <div className="font-bold text-[12px] text-gray-900">{label}</div>
-                  <div className="text-[10.5px] text-gray-400">{desc}</div>
+                  <div className="text-[10.5px] text-gray-600">{desc}</div>
                 </div>
               </button>
             ))}
@@ -584,7 +584,7 @@ function CheckerPage({ unis, progs, schols, paystackKey }) {
               onChange={e => setPhone(e.target.value)}
               placeholder="0XX XXX XXXX"
               autoComplete="tel"
-              className="w-full px-3 py-2.5 border-2 border-violet-100 rounded-xl text-[12.5px] font-medium text-gray-800 outline-none bg-white"
+              className="w-full px-3 py-2.5 border-2 border-violet-200 rounded-xl text-[12.5px] font-medium text-gray-800 outline-none bg-white"
               style={{WebkitAppearance:"none"}}
             />
           </div>
@@ -599,13 +599,13 @@ function CheckerPage({ unis, progs, schols, paystackKey }) {
       {step === 3 && (
         <div>
           <h2 className="font-black text-[14px] text-gray-900 mb-1" style={{fontFamily:"Outfit,Arial,sans-serif"}}>Core Subject Grades</h2>
-          <p className="text-[11px] text-gray-400 mb-3">If 2 sittings, enter both — we use the best grade automatically.</p>
+          <p className="text-[11px] text-gray-600 mb-3">If 2 sittings, enter both — we use the best grade automatically.</p>
           <div className="flex gap-2 mb-4">
             {[1,2].map(n => (
               <button key={n}
                 onClick={() => setSit(n)}
                 className={`flex-1 py-2 rounded-full text-[11px] font-bold cursor-pointer active:scale-95 transition-all select-none outline-none border-2
-                  ${sit===n?"bg-gradient-to-r from-violet-600 to-pink-500 text-white border-transparent":"bg-white text-gray-700 border-violet-100"}`}>
+                  ${sit===n?"bg-gradient-to-r from-violet-700 to-pink-500 text-white border-transparent":"bg-white text-gray-700 border-violet-200"}`}>
                 {n} Sitting{n>1?"s":""}
               </button>
             ))}
@@ -614,11 +614,11 @@ function CheckerPage({ unis, progs, schols, paystackKey }) {
             {CORES.map(s => (
               <div key={s.k}>
                 <div className="text-[11.5px] font-bold text-gray-800 mb-1.5">{s.l}</div>
-                {sit===2 && <div className="text-[10px] text-gray-400 mb-1">Sitting 1 (May/June)</div>}
+                {sit===2 && <div className="text-[10px] text-gray-600 mb-1">Sitting 1 (May/June)</div>}
                 <GradePicker value={cg[s.k]||""} onChange={v => setCg(c => ({...c,[s.k]:v}))}/>
                 {sit===2 && (
                   <>
-                    <div className="text-[10px] text-gray-400 mt-2 mb-1">Sitting 2 (Nov/Dec)</div>
+                    <div className="text-[10px] text-gray-600 mt-2 mb-1">Sitting 2 (Nov/Dec)</div>
                     <GradePicker value={cg[s.k+"2"]||""} onChange={v => setCg(c => ({...c,[s.k+"2"]:v}))}/>
                     {cg[s.k] && cg[s.k+"2"] && (
                       <div className="text-[10px] text-emerald-600 font-bold mt-1">
@@ -652,7 +652,7 @@ function CheckerPage({ unis, progs, schols, paystackKey }) {
               return (
                 <div key={e}
                   className={`flex items-center gap-2.5 p-3 rounded-xl border-2 cursor-pointer active:scale-98 transition-all select-none
-                    ${on?"border-violet-600 bg-violet-50":"border-violet-100 bg-white"}`}
+                    ${on?"border-violet-600 bg-violet-100":"border-violet-200 bg-white"}`}
                   onClick={() => {
                     if (on) {
                       setEl(l => l.filter(x => x !== e));
@@ -662,7 +662,7 @@ function CheckerPage({ unis, progs, schols, paystackKey }) {
                     }
                   }}>
                   <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center text-[10px] font-black flex-shrink-0
-                    ${on?"bg-gradient-to-br from-violet-600 to-pink-500 border-transparent text-white":"border-violet-200"}`}>
+                    ${on?"bg-gradient-to-br from-violet-700 to-pink-500 border-transparent text-white":"border-violet-200"}`}>
                     {on?"✓":""}
                   </div>
                   <div className="flex-1 text-[12px] font-medium text-gray-800">{e}</div>
@@ -692,7 +692,7 @@ function CheckerPage({ unis, progs, schols, paystackKey }) {
       {step === 5 && (
         <div>
           <h2 className="font-black text-[14px] text-gray-900 mb-3" style={{fontFamily:"Outfit,Arial,sans-serif"}}>Review Your Details</h2>
-          <div className="bg-white border border-violet-100 rounded-2xl shadow-sm overflow-hidden mb-3">
+          <div className="bg-white border border-violet-200 rounded-2xl shadow-sm overflow-hidden mb-3">
             <table className="w-full text-[11px]">
               <tbody>
                 {[
@@ -703,22 +703,22 @@ function CheckerPage({ unis, progs, schols, paystackKey }) {
                   ["Science", getBest(cg,"sci")||"—"],
                   ["Social Studies", getBest(cg,"soc")||"—"],
                 ].map(([k,v],i) => (
-                  <tr key={k} className={i%2===0?"bg-violet-50":""}>
-                    <td className="py-1.5 px-3 text-gray-400 font-semibold w-28">{k}</td>
+                  <tr key={k} className={i%2===0?"bg-violet-100":""}>
+                    <td className="py-1.5 px-3 text-gray-600 font-semibold w-28">{k}</td>
                     <td className="py-1.5 px-3 text-gray-800 font-bold">{v}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          <div className="bg-white border border-violet-100 rounded-2xl shadow-sm p-3 mb-3">
+          <div className="bg-white border border-violet-200 rounded-2xl shadow-sm p-3 mb-3">
             <div className="font-bold text-[11.5px] text-gray-800 mb-2">Which university to check?</div>
             <div className="flex gap-2 mb-2">
               {[["all","All Universities"],["one","Specific University"]].map(([id,label]) => (
                 <button key={id}
                   onClick={() => setScope(id)}
                   className={`flex-1 py-1.5 rounded-full text-[11px] font-bold cursor-pointer active:scale-95 transition-all select-none outline-none border-2
-                    ${scope===id?"bg-gradient-to-r from-violet-600 to-pink-500 text-white border-transparent":"bg-white text-gray-700 border-violet-100"}`}>
+                    ${scope===id?"bg-gradient-to-r from-violet-700 to-pink-500 text-white border-transparent":"bg-white text-gray-700 border-violet-200"}`}>
                   {label}
                 </button>
               ))}
@@ -727,16 +727,16 @@ function CheckerPage({ unis, progs, schols, paystackKey }) {
               <select
                 value={prefUni}
                 onChange={e => setPrefUni(e.target.value)}
-                className="w-full px-3 py-2 border-2 border-violet-100 rounded-xl text-[11.5px] font-medium text-gray-700 outline-none bg-white cursor-pointer"
+                className="w-full px-3 py-2 border-2 border-violet-200 rounded-xl text-[11.5px] font-medium text-gray-700 outline-none bg-white cursor-pointer"
                 style={{WebkitAppearance:"none"}}>
                 <option value="">Select university...</option>
                 {unis.map(u => <option key={u.code} value={u.code}>{u.name}</option>)}
               </select>
             )}
           </div>
-          <div className="bg-violet-50 border-2 border-violet-200 rounded-xl p-3 mb-4">
+          <div className="bg-violet-100 border-2 border-violet-200 rounded-xl p-3 mb-4">
             <div className="font-bold text-[11.5px] text-violet-700 mb-0.5">Payment required to unlock results</div>
-            <div className="text-[11px] text-gray-500">Choose a plan and pay securely via Mobile Money or card.</div>
+            <div className="text-[11px] text-gray-700">Choose a plan and pay securely via Mobile Money or card.</div>
           </div>
           <div className="flex gap-2">
             <Btn variant="ghost" size="md" onClick={() => go(4)}>← Back</Btn>
@@ -748,7 +748,7 @@ function CheckerPage({ unis, progs, schols, paystackKey }) {
       {/* ─── STEP 6: Results ─── */}
       {step === 6 && res && (
         <div>
-          <div className="bg-gradient-to-br from-violet-600 to-pink-500 rounded-2xl p-4 mb-3">
+          <div className="bg-gradient-to-br from-violet-700 to-pink-500 rounded-2xl p-4 mb-3">
             <div className="flex justify-between items-start mb-3">
               <div>
                 <div className="flex gap-1.5 flex-wrap mb-2">
@@ -784,7 +784,7 @@ function CheckerPage({ unis, progs, schols, paystackKey }) {
               <button key={t.id}
                 onClick={() => setTab(t.id)}
                 className={`px-3 py-1.5 rounded-full text-[11px] font-bold whitespace-nowrap flex-shrink-0 cursor-pointer active:scale-95 transition-all select-none outline-none border-2
-                  ${tab===t.id?"bg-gradient-to-r from-violet-600 to-pink-500 text-white border-transparent":"bg-white text-gray-500 border-violet-100"}`}>
+                  ${tab===t.id?"bg-gradient-to-r from-violet-700 to-pink-500 text-white border-transparent":"bg-white text-gray-700 border-violet-200"}`}>
                 {t.label}
               </button>
             ))}
@@ -793,9 +793,9 @@ function CheckerPage({ unis, progs, schols, paystackKey }) {
           {/* Result items */}
           <div className="space-y-2 mb-4">
             {tab==="s" ? resultItems.map((s,i) => (
-              <div key={i} className="bg-white border border-violet-100 rounded-2xl shadow-sm p-3" style={{borderLeft:"4px solid #10b981"}}>
+              <div key={i} className="bg-white border border-violet-200 rounded-2xl shadow-sm p-3" style={{borderLeft:"4px solid #10b981"}}>
                 <div className="font-bold text-[12px] text-gray-900 mb-0.5">{s.name}</div>
-                <div className="text-[11px] text-gray-400 mb-2">{s.org}</div>
+                <div className="text-[11px] text-gray-600 mb-2">{s.org}</div>
                 <div className="flex gap-1.5 flex-wrap mb-2">
                   <span className="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full text-[10px] font-bold">{s.amount}</span>
                   <span className="bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full text-[10px] font-bold">{s.deadline}</span>
@@ -803,9 +803,9 @@ function CheckerPage({ unis, progs, schols, paystackKey }) {
                 <Btn size="sm">Apply Now</Btn>
               </div>
             )) : resultItems.length===0 ? (
-              <div className="text-center py-8 text-[12px] text-gray-400">No programmes in this category.</div>
+              <div className="text-center py-8 text-[12px] text-gray-600">No programmes in this category.</div>
             ) : resultItems.map((item,i) => (
-              <div key={i} className="bg-white border border-violet-100 rounded-2xl shadow-sm p-3"
+              <div key={i} className="bg-white border border-violet-200 rounded-2xl shadow-sm p-3"
                 style={{borderLeft:`4px solid ${tab==="q"?"#10b981":tab==="n"?"#f59e0b":"#fca5a5"}`}}>
                 <div className="font-bold text-[12px] text-gray-900 mb-1.5">{item.p.name}</div>
                 <div className="flex gap-1.5 flex-wrap mb-2">
@@ -828,9 +828,9 @@ function CheckerPage({ unis, progs, schols, paystackKey }) {
                   </div>
                 )}
                 {item.p.career && (
-                  <div className="bg-violet-50 rounded-lg p-2 mt-1.5">
-                    <div className="text-[9.5px] font-black text-violet-600 uppercase tracking-wider mb-0.5">Career Paths</div>
-                    <div className="text-[10.5px] text-gray-500">{item.p.career}</div>
+                  <div className="bg-violet-100 rounded-lg p-2 mt-1.5">
+                    <div className="text-[9.5px] font-black text-violet-700 uppercase tracking-wider mb-0.5">Career Paths</div>
+                    <div className="text-[10.5px] text-gray-700">{item.p.career}</div>
                   </div>
                 )}
               </div>
@@ -866,12 +866,12 @@ function CheckerPage({ unis, progs, schols, paystackKey }) {
                   <button key={id}
                     onClick={() => setPlan(id)}
                     className={`w-full flex items-center gap-3 p-3 rounded-xl border-2 mb-2 text-left cursor-pointer active:scale-98 transition-all select-none outline-none relative
-                      ${plan===id?"border-violet-600 bg-violet-50":"border-violet-100 bg-white"}`}>
-                    {pop && <div className="absolute -top-2 right-3 bg-gradient-to-r from-violet-600 to-pink-500 text-white text-[9px] font-black px-2 py-0.5 rounded-full">POPULAR</div>}
+                      ${plan===id?"border-violet-600 bg-violet-100":"border-violet-200 bg-white"}`}>
+                    {pop && <div className="absolute -top-2 right-3 bg-gradient-to-r from-violet-700 to-pink-500 text-white text-[9px] font-black px-2 py-0.5 rounded-full">POPULAR</div>}
                     <span className="text-[20px]">{icon}</span>
                     <div className="flex-1">
                       <div className="font-bold text-[12px] text-gray-900">{name}</div>
-                      <div className="text-[11px] text-gray-400">{desc}</div>
+                      <div className="text-[11px] text-gray-600">{desc}</div>
                     </div>
                     <div className={`w-4 h-4 rounded-full border-2 flex-shrink-0 ${plan===id?"border-violet-600 bg-violet-600":"border-violet-200"}`}/>
                   </button>
@@ -886,7 +886,7 @@ function CheckerPage({ unis, progs, schols, paystackKey }) {
             {payStep === "method" && (
               <>
                 <h3 className="font-black text-[14px] text-gray-900 mb-1" style={{fontFamily:"Outfit,Arial,sans-serif"}}>Payment Details</h3>
-                <p className="text-[11px] text-gray-400 mb-3">Paying <strong>GHC{amt}</strong> for {plan} plan</p>
+                <p className="text-[11px] text-gray-600 mb-3">Paying <strong>GHC{amt}</strong> for {plan} plan</p>
                 <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 mb-4 text-[11px] text-emerald-700">
                   ✓ Paystack — MTN MoMo · Vodafone Cash · AirtelTigo · Visa · Mastercard
                 </div>
@@ -898,7 +898,7 @@ function CheckerPage({ unis, progs, schols, paystackKey }) {
                     onChange={e => setPhone(e.target.value)}
                     placeholder="0XX XXX XXXX"
                     autoComplete="tel"
-                    className="w-full px-3 py-2.5 border-2 border-violet-100 rounded-xl text-[13px] font-medium text-gray-800 outline-none bg-white"
+                    className="w-full px-3 py-2.5 border-2 border-violet-200 rounded-xl text-[13px] font-medium text-gray-800 outline-none bg-white"
                     style={{WebkitAppearance:"none"}}
                   />
                 </div>
@@ -910,7 +910,7 @@ function CheckerPage({ unis, progs, schols, paystackKey }) {
                     onChange={e => setEmail(e.target.value)}
                     placeholder="your@email.com"
                     autoComplete="email"
-                    className="w-full px-3 py-2.5 border-2 border-violet-100 rounded-xl text-[13px] font-medium text-gray-800 outline-none bg-white"
+                    className="w-full px-3 py-2.5 border-2 border-violet-200 rounded-xl text-[13px] font-medium text-gray-800 outline-none bg-white"
                     style={{WebkitAppearance:"none"}}
                   />
                 </div>
@@ -926,10 +926,10 @@ function CheckerPage({ unis, progs, schols, paystackKey }) {
               <div className="text-center py-4">
                 <div className="text-[44px] mb-3">🔒</div>
                 <h3 className="font-black text-[14px] text-gray-900 mb-1" style={{fontFamily:"Outfit,Arial,sans-serif"}}>Ready to Pay</h3>
-                <p className="text-[11.5px] text-gray-500 mb-1">Plan: <strong>{plan}</strong> — GHC{amt}</p>
-                <p className="text-[11px] text-gray-400 mb-5">Paystack secure checkout · MTN MoMo · Vodafone · Card</p>
+                <p className="text-[11.5px] text-gray-700 mb-1">Plan: <strong>{plan}</strong> — GHC{amt}</p>
+                <p className="text-[11px] text-gray-600 mb-5">Paystack secure checkout · MTN MoMo · Vodafone · Card</p>
                 <Btn full size="lg" onClick={doPaystack}>Pay with Paystack →</Btn>
-                <p className="text-[10px] text-gray-400 mt-2">PCI-DSS Certified</p>
+                <p className="text-[10px] text-gray-600 mt-2">PCI-DSS Certified</p>
               </div>
             )}
 
@@ -938,7 +938,7 @@ function CheckerPage({ unis, progs, schols, paystackKey }) {
               <div className="text-center py-6">
                 <div className="text-[52px] mb-3">✅</div>
                 <h3 className="font-black text-[14px] text-emerald-600 mb-1" style={{fontFamily:"Outfit,Arial,sans-serif"}}>Payment Confirmed!</h3>
-                <p className="text-[11.5px] text-gray-500">Running eligibility analysis...</p>
+                <p className="text-[11.5px] text-gray-700">Running eligibility analysis...</p>
                 <div className="w-8 h-8 border-4 border-violet-200 border-t-violet-600 rounded-full animate-spin mx-auto mt-4"/>
               </div>
             )}
@@ -986,10 +986,10 @@ function CalculatorPage({ setPage }) {
     <div className="max-w-lg mx-auto px-4 py-4">
       <Tag>Calculator</Tag>
       <h2 className="font-black text-[16px] text-gray-900 mb-1" style={{fontFamily:"Outfit,Arial,sans-serif"}}>Calculate Your Aggregate</h2>
-      <p className="text-[11px] text-gray-400 mb-4">Enter your grades — we calculate your best-6 WASSCE aggregate.</p>
+      <p className="text-[11px] text-gray-600 mb-4">Enter your grades — we calculate your best-6 WASSCE aggregate.</p>
       <Card className="p-3 mb-3">
         <label className="block text-[11px] font-bold text-gray-700 mb-1.5">SHS Track</label>
-        <select value={track} onChange={e=>setTrack(e.target.value)} className="w-full px-3 py-2 border-2 border-violet-100 rounded-xl text-[11.5px] font-medium text-gray-700 outline-none bg-white cursor-pointer mb-4" style={{WebkitAppearance:"none"}}>
+        <select value={track} onChange={e=>setTrack(e.target.value)} className="w-full px-3 py-2 border-2 border-violet-200 rounded-xl text-[11.5px] font-medium text-gray-700 outline-none bg-white cursor-pointer mb-4" style={{WebkitAppearance:"none"}}>
           {Object.keys(TRACKS).map(t=><option key={t} value={t}>{t}</option>)}
         </select>
         {CORES.map(s=>(
@@ -998,7 +998,7 @@ function CalculatorPage({ setPage }) {
             <GradePicker value={cg[s.k]||""} onChange={v=>setCg(c=>({...c,[s.k]:v}))}/>
           </div>
         ))}
-        <div className="text-[11px] font-bold text-gray-400 mb-2">Elective Subjects</div>
+        <div className="text-[11px] font-bold text-gray-600 mb-2">Elective Subjects</div>
         {(TRACKS[track]?.electives||[]).slice(0,6).map(e=>(
           <div key={e} className="mb-3">
             <div className="text-[11px] font-medium text-gray-600 mb-1.5">{e}</div>
@@ -1007,7 +1007,7 @@ function CalculatorPage({ setPage }) {
         ))}
       </Card>
       {agg && (
-        <div className="bg-gradient-to-br from-violet-600 to-pink-500 rounded-2xl p-5 text-center mb-3">
+        <div className="bg-gradient-to-br from-violet-700 to-pink-500 rounded-2xl p-5 text-center mb-3">
           <div className="text-[10px] font-bold text-white/70 uppercase tracking-wider mb-1">Your Aggregate</div>
           <div className="font-black text-[60px] text-white leading-none mb-2" style={{fontFamily:"Outfit,Arial,sans-serif"}}>{agg}</div>
           <div className="text-[11.5px] text-white/85">{agg<=6?"Exceptional — qualifies for any programme":agg<=9?"Excellent — Medicine, Law, Engineering":agg<=12?"Very Good — Computer Science, Nursing, Business":agg<=18?"Good — Most university programmes eligible":"Below typical minimum — consider NOVDEC resit"}</div>
@@ -1028,18 +1028,18 @@ function UniversitiesPage({ unis, setPage }) {
       <Tag>Universities</Tag>
       <h2 className="font-black text-[16px] text-gray-900 mb-3" style={{fontFamily:"Outfit,Arial,sans-serif"}}>{unis.length||58} Accredited Universities</h2>
       <div className="flex gap-2 mb-3">
-        <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search universities..." className="flex-1 px-3 py-2 border-2 border-violet-100 rounded-xl text-[11.5px] outline-none focus:border-violet-500 bg-white" style={{WebkitAppearance:"none",minWidth:0}}/>
-        <select value={type} onChange={e=>setType(e.target.value)} className="px-2 py-2 border-2 border-violet-100 rounded-xl text-[11px] outline-none bg-white cursor-pointer" style={{WebkitAppearance:"none"}}>
+        <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search universities..." className="flex-1 px-3 py-2 border-2 border-violet-200 rounded-xl text-[11.5px] outline-none focus:border-violet-1000 bg-white" style={{WebkitAppearance:"none",minWidth:0}}/>
+        <select value={type} onChange={e=>setType(e.target.value)} className="px-2 py-2 border-2 border-violet-200 rounded-xl text-[11px] outline-none bg-white cursor-pointer" style={{WebkitAppearance:"none"}}>
           <option value="">All</option><option>Public</option><option>Private</option><option>Technical</option>
         </select>
       </div>
       <div className="grid grid-cols-1 gap-2">
         {filtered.map(u=>(
           <Card key={u.code} className="p-3 flex gap-3 items-center" onClick={()=>setPage("checker")}>
-            <div className="w-10 h-10 bg-gradient-to-br from-violet-600 to-pink-500 rounded-xl flex items-center justify-center text-white font-black text-[10px] flex-shrink-0 leading-tight text-center">{u.code.slice(0,5)}</div>
+            <div className="w-10 h-10 bg-gradient-to-br from-violet-700 to-pink-500 rounded-xl flex items-center justify-center text-white font-black text-[10px] flex-shrink-0 leading-tight text-center">{u.code.slice(0,5)}</div>
             <div className="flex-1 min-w-0">
               <div className="font-bold text-[12px] text-gray-900 leading-tight">{u.name}</div>
-              <div className="text-[10.5px] text-gray-400">{u.loc}</div>
+              <div className="text-[10.5px] text-gray-600">{u.loc}</div>
             </div>
             <Badge color="violet">{u.type}</Badge>
           </Card>
@@ -1059,8 +1059,8 @@ function ProgrammesPage({ progs }) {
       <Tag>Programmes</Tag>
       <h2 className="font-black text-[16px] text-gray-900 mb-3" style={{fontFamily:"Outfit,Arial,sans-serif"}}>{progs.length||"1,000"}+ Programmes</h2>
       <div className="flex gap-2 mb-3">
-        <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search programmes..." className="flex-1 px-3 py-2 border-2 border-violet-100 rounded-xl text-[11.5px] outline-none focus:border-violet-500 bg-white" style={{WebkitAppearance:"none",minWidth:0}}/>
-        <select value={uni} onChange={e=>setUni(e.target.value)} className="px-2 py-2 border-2 border-violet-100 rounded-xl text-[11px] outline-none bg-white cursor-pointer" style={{WebkitAppearance:"none"}}>
+        <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search programmes..." className="flex-1 px-3 py-2 border-2 border-violet-200 rounded-xl text-[11.5px] outline-none focus:border-violet-1000 bg-white" style={{WebkitAppearance:"none",minWidth:0}}/>
+        <select value={uni} onChange={e=>setUni(e.target.value)} className="px-2 py-2 border-2 border-violet-200 rounded-xl text-[11px] outline-none bg-white cursor-pointer" style={{WebkitAppearance:"none"}}>
           <option value="">All</option>{uniList.map(u=><option key={u} value={u}>{u}</option>)}
         </select>
       </div>
@@ -1069,7 +1069,7 @@ function ProgrammesPage({ progs }) {
           <Card key={i} className="p-3">
             <div className="font-bold text-[12px] text-gray-900 mb-1.5">{p.name}</div>
             <div className="flex gap-1.5 flex-wrap">{p.uni&&<Badge color="violet">{p.uni}</Badge>}<Badge color="gray">Cut-off: {p.co}</Badge></div>
-            {p.career&&<div className="text-[10.5px] text-gray-400 mt-1.5">{p.career}</div>}
+            {p.career&&<div className="text-[10.5px] text-gray-600 mt-1.5">{p.career}</div>}
           </Card>
         ))}
       </div>
@@ -1086,24 +1086,24 @@ function CutoffsPage({ progs }) {
     <div className="max-w-lg mx-auto px-4 py-4">
       <Tag>Cut-Off Points</Tag>
       <h2 className="font-black text-[16px] text-gray-900 mb-1" style={{fontFamily:"Outfit,Arial,sans-serif"}}>2025/2026 Cut-Off Aggregates</h2>
-      <p className="text-[11px] text-gray-400 mb-3">Always verify with universities before applying.</p>
+      <p className="text-[11px] text-gray-600 mb-3">Always verify with universities before applying.</p>
       <div className="flex gap-2 mb-3">
-        <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search..." className="flex-1 px-3 py-2 border-2 border-violet-100 rounded-xl text-[11.5px] outline-none bg-white" style={{WebkitAppearance:"none",minWidth:0}}/>
-        <select value={uni} onChange={e=>setUni(e.target.value)} className="px-2 py-2 border-2 border-violet-100 rounded-xl text-[11px] outline-none bg-white cursor-pointer" style={{WebkitAppearance:"none"}}>
+        <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search..." className="flex-1 px-3 py-2 border-2 border-violet-200 rounded-xl text-[11.5px] outline-none bg-white" style={{WebkitAppearance:"none",minWidth:0}}/>
+        <select value={uni} onChange={e=>setUni(e.target.value)} className="px-2 py-2 border-2 border-violet-200 rounded-xl text-[11px] outline-none bg-white cursor-pointer" style={{WebkitAppearance:"none"}}>
           <option value="">All</option>{uniList.map(u=><option key={u} value={u}>{u}</option>)}
         </select>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-[11px] border-collapse">
-          <thead><tr className="bg-violet-50">
-            <th className="py-2 px-3 text-left font-bold text-gray-400 text-[9.5px] uppercase tracking-wider border-b-2 border-violet-100">Programme</th>
-            <th className="py-2 px-3 text-left font-bold text-gray-400 text-[9.5px] uppercase tracking-wider border-b-2 border-violet-100">University</th>
-            <th className="py-2 px-3 text-center font-bold text-gray-400 text-[9.5px] uppercase tracking-wider border-b-2 border-violet-100">Cut-Off</th>
+          <thead><tr className="bg-violet-100">
+            <th className="py-2 px-3 text-left font-bold text-gray-600 text-[9.5px] uppercase tracking-wider border-b-2 border-violet-200">Programme</th>
+            <th className="py-2 px-3 text-left font-bold text-gray-600 text-[9.5px] uppercase tracking-wider border-b-2 border-violet-200">University</th>
+            <th className="py-2 px-3 text-center font-bold text-gray-600 text-[9.5px] uppercase tracking-wider border-b-2 border-violet-200">Cut-Off</th>
           </tr></thead>
           <tbody>{filtered.map((p,i)=>(
-            <tr key={i} className="border-b border-violet-50 bg-white">
+            <tr key={i} className="border-b border-violet-100 bg-white">
               <td className="py-2 px-3 font-semibold text-gray-800">{p.name}</td>
-              <td className="py-2 px-3 text-gray-400">{p.uni}</td>
+              <td className="py-2 px-3 text-gray-600">{p.uni}</td>
               <td className="py-2 px-3 text-center"><Badge color="violet">{p.co}</Badge></td>
             </tr>
           ))}</tbody>
@@ -1118,12 +1118,12 @@ function ScholarshipsPage({ schols }) {
     <div className="max-w-lg mx-auto px-4 py-4">
       <Tag>Scholarships</Tag>
       <h2 className="font-black text-[16px] text-gray-900 mb-1" style={{fontFamily:"Outfit,Arial,sans-serif"}}>Available Scholarships</h2>
-      <p className="text-[11px] text-gray-400 mb-4">Funding opportunities for Ghanaian university students</p>
+      <p className="text-[11px] text-gray-600 mb-4">Funding opportunities for Ghanaian university students</p>
       <div className="space-y-3">
         {schols.map((s,i)=>(
           <Card key={i} className="p-3 border-l-4 border-l-emerald-400">
             <div className="font-bold text-[12.5px] text-gray-900 mb-0.5">{s.name}</div>
-            <div className="text-[11px] text-gray-400 mb-2">{s.org}</div>
+            <div className="text-[11px] text-gray-600 mb-2">{s.org}</div>
             <div className="flex gap-1.5 flex-wrap mb-3"><Badge color="green">{s.amount}</Badge><Badge color="amber">{s.deadline}</Badge></div>
             <div className="flex gap-2"><Btn size="sm">Apply Now</Btn><Btn size="sm" variant="ghost">Set Alert</Btn></div>
           </Card>
@@ -1138,7 +1138,7 @@ function FormsPage({ forms }) {
     <div className="max-w-lg mx-auto px-4 py-4">
       <Tag>Admission Forms</Tag>
       <h2 className="font-black text-[16px] text-gray-900 mb-1" style={{fontFamily:"Outfit,Arial,sans-serif"}}>Admission Forms Tracker</h2>
-      <p className="text-[11px] text-gray-400 mb-4">Track form opening status and deadlines for all universities</p>
+      <p className="text-[11px] text-gray-600 mb-4">Track form opening status and deadlines for all universities</p>
       <div className="space-y-2">
         {forms.map((f,i)=>(
           <Card key={i} className="p-3">
@@ -1146,7 +1146,7 @@ function FormsPage({ forms }) {
               <div className="font-bold text-[12px] text-gray-900">{f.uni}</div>
               <Badge color={f.status==="Open"?"green":"gray"}>{f.status}</Badge>
             </div>
-            <div className="flex gap-3 text-[10.5px] text-gray-400 mb-2"><span>📅 {f.deadline}</span><span>💰 {f.fee}</span></div>
+            <div className="flex gap-3 text-[10.5px] text-gray-600 mb-2"><span>📅 {f.deadline}</span><span>💰 {f.fee}</span></div>
             {f.status==="Open"?<Btn size="sm">Apply</Btn>:<Btn size="sm" variant="ghost">Set Alert</Btn>}
           </Card>
         ))}
@@ -1166,7 +1166,7 @@ function NewsPage({ news }) {
             <div className="text-[20px] flex-shrink-0">📰</div>
             <div>
               <div className="font-bold text-[12px] text-gray-900 mb-0.5 leading-tight">{n.t}</div>
-              <div className="text-[10.5px] text-gray-400 flex items-center gap-2">{n.date}{n.hot&&<Badge color="violet">Urgent</Badge>}</div>
+              <div className="text-[10.5px] text-gray-600 flex items-center gap-2">{n.date}{n.hot&&<Badge color="violet">Urgent</Badge>}</div>
             </div>
           </Card>
         ))}
@@ -1189,9 +1189,22 @@ function AIChatPage() {
     const newMsgs = [...msgs, {r:"user",t:msg},{r:"ai",t:"..."}];
     setMsgs(newMsgs); setLoading(true);
     try {
-      const r = await fetch(`${SUPA_URL}/functions/v1/ai-counsellor`,{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${SUPA_KEY}`},body:JSON.stringify({messages:newMsgs.slice(0,-1).map(m=>({role:m.r==="ai"?"assistant":"user",content:m.t}))})});
+      const history = newMsgs.slice(0,-1).map(m=>({role:m.r==="ai"?"assistant":"user",content:m.t}));
+      const r = await fetch("https://api.anthropic.com/v1/messages",{
+        method:"POST",
+        headers:{"Content-Type":"application/json","x-api-key":window._claudeKey||"","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+        body:JSON.stringify({
+          model:"claude-haiku-4-5-20251001",
+          max_tokens:512,
+          system:"You are UniPredict Ghana's AI Counsellor. You help Ghanaian SHS students with WASSCE university admissions. You know about: WASSCE aggregate calculation (best 6 from core+electives, lower=better), all 58 Ghanaian universities, KNUST not counting Social Studies, cut-off points, SHS tracks (General Science, General Arts, Business, Home Economics, Visual Arts, Technical, Agricultural Science), scholarships like GETFUND and Mastercard Foundation, and admission form deadlines. Be friendly, concise and helpful. Always respond in plain English suitable for a student.",
+          messages:history
+        })
+      });
       const d = await r.json();
-      setMsgs(m=>[...m.slice(0,-1),{r:"ai",t:d?.reply||"Sorry, I couldn't get a response. Try again."}]);
+      const reply = d?.content?.[0]?.text || "Sorry, I couldn't get a response. Try again.";
+      setMsgs(m=>[...m.slice(0,-1),{r:"ai",t:reply}]);
+      // Save to Supabase for admin inbox
+      fetch(`${SUPA_URL}/rest/v1/ai_inbox`,{method:"POST",headers:{"Content-Type":"application/json",apikey:SUPA_KEY,Authorization:`Bearer ${SUPA_KEY}`,Prefer:"return=minimal"},body:JSON.stringify({question:msg,answer:reply,status:"replied",created_at:new Date().toISOString()})}).catch(()=>{});
     } catch {
       setMsgs(m=>[...m.slice(0,-1),{r:"ai",t:"I'm having trouble connecting. Please try WhatsApp: 0537 889 150",wa:true}]);
     } finally { setLoading(false); }
@@ -1201,11 +1214,11 @@ function AIChatPage() {
       <div className="py-3">
         <Tag>AI Counsellor</Tag>
         <h2 className="font-black text-[15px] text-gray-900" style={{fontFamily:"Outfit,Arial,sans-serif"}}>UniPredict AI Counsellor</h2>
-        <p className="text-[10.5px] text-gray-400">Ask anything about university admissions in Ghana</p>
+        <p className="text-[10.5px] text-gray-600">Ask anything about university admissions in Ghana</p>
       </div>
       <div className="flex-1 overflow-y-auto space-y-2 pb-2">
         {msgs.map((m,i)=>(
-          <div key={i} className={`max-w-[86%] px-3 py-2 rounded-2xl text-[12px] leading-relaxed ${m.r==="ai"?"self-start bg-white border border-violet-100 text-gray-800 rounded-tl-sm":"self-end bg-gradient-to-br from-violet-600 to-pink-500 text-white rounded-tr-sm"}`}
+          <div key={i} className={`max-w-[86%] px-3 py-2 rounded-2xl text-[12px] leading-relaxed ${m.r==="ai"?"self-start bg-white border border-violet-200 text-gray-800 rounded-tl-sm":"self-end bg-gradient-to-br from-violet-700 to-pink-500 text-white rounded-tr-sm"}`}
             style={{alignSelf:m.r==="ai"?"flex-start":"flex-end",display:"block",marginLeft:m.r==="ai"?0:"auto"}}>
             {m.t}
             {m.wa && <a href="https://wa.me/233537889150" target="_blank" rel="noreferrer" className="block mt-2 bg-emerald-500 text-white text-[11px] font-bold px-3 py-1.5 rounded-lg text-center">Chat on WhatsApp</a>}
@@ -1215,11 +1228,11 @@ function AIChatPage() {
       </div>
       <div className="flex flex-wrap gap-1.5 py-2">
         {["What is my aggregate?","KNUST cut-offs 2025","Available scholarships","Best science programmes"].map(s=>(
-          <button key={s} onClick={()=>send(s)} className="px-2.5 py-1 border border-violet-200 rounded-full text-[10.5px] font-medium text-violet-600 bg-white cursor-pointer active:bg-violet-50 select-none outline-none">{s}</button>
+          <button key={s} onClick={()=>send(s)} className="px-2.5 py-1 border border-violet-200 rounded-full text-[10.5px] font-medium text-violet-700 bg-white cursor-pointer active:bg-violet-100 select-none outline-none">{s}</button>
         ))}
       </div>
-      <div className="flex gap-2 pb-3 border-t border-violet-100 pt-2">
-        <input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>e.key==="Enter"&&send()} placeholder="Ask about programmes, cut-offs, scholarships..." className="flex-1 px-3 py-2 border-2 border-violet-100 rounded-xl text-[12px] outline-none focus:border-violet-500 bg-white" style={{WebkitAppearance:"none",minWidth:0}}/>
+      <div className="flex gap-2 pb-3 border-t border-violet-200 pt-2">
+        <input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>e.key==="Enter"&&send()} placeholder="Ask about programmes, cut-offs, scholarships..." className="flex-1 px-3 py-2 border-2 border-violet-200 rounded-xl text-[12px] outline-none focus:border-violet-1000 bg-white" style={{WebkitAppearance:"none",minWidth:0}}/>
         <Btn size="md" disabled={loading||!input.trim()} onClick={()=>send()}>Send →</Btn>
       </div>
     </div>
@@ -1233,7 +1246,7 @@ function PricingPage({ setPage }) {
       <div className="text-center mb-5">
         <Tag>Pricing</Tag>
         <h2 className="font-black text-[18px] text-gray-900 mb-1" style={{fontFamily:"Outfit,Arial,sans-serif"}}>Simple, Affordable Pricing</h2>
-        <p className="text-[11.5px] text-gray-400">No subscription. No hidden fees. Pay only when you need a check.</p>
+        <p className="text-[11.5px] text-gray-600">No subscription. No hidden fees. Pay only when you need a check.</p>
       </div>
       <div className="space-y-3 mb-4">
         {[
@@ -1241,14 +1254,14 @@ function PricingPage({ setPage }) {
           {id:"premium",icon:"⭐",name:"Premium",price:PRICES.premium,sub:"All Universities · 1 Check",features:["All 58 universities checked","Full ranked results","Scholarship matches","Career paths & prospects"],pop:true},
           {id:"bundle",icon:"🔥",name:"Bundle",price:PRICES.bundle,sub:"All Universities · 3 Checks",features:["3 full premium checks","Share with friends","Best value option"],pop:false},
         ].map(p=>(
-          <Card key={p.id} className={`p-4 relative ${p.pop?"border-2 border-violet-500 shadow-md":""}`}>
-            {p.pop&&<div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-violet-600 to-pink-500 text-white text-[9.5px] font-black px-3 py-0.5 rounded-full whitespace-nowrap">MOST POPULAR</div>}
+          <Card key={p.id} className={`p-4 relative ${p.pop?"border-2 border-violet-1000 shadow-md":""}`}>
+            {p.pop&&<div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-violet-700 to-pink-500 text-white text-[9.5px] font-black px-3 py-0.5 rounded-full whitespace-nowrap">MOST POPULAR</div>}
             <div className="flex items-start justify-between mb-3">
               <div>
                 <div className="text-[24px] mb-1">{p.icon}</div>
-                <div className="font-black text-[22px] text-violet-600 leading-none mb-0.5" style={{fontFamily:"Outfit,Arial,sans-serif"}}>GHC{p.price}</div>
+                <div className="font-black text-[22px] text-violet-700 leading-none mb-0.5" style={{fontFamily:"Outfit,Arial,sans-serif"}}>GHC{p.price}</div>
                 <div className="font-bold text-[13px] text-gray-900">{p.name}</div>
-                <div className="text-[11px] text-gray-400">{p.sub}</div>
+                <div className="text-[11px] text-gray-600">{p.sub}</div>
               </div>
             </div>
             <div className="space-y-1.5 mb-3">
@@ -1260,7 +1273,7 @@ function PricingPage({ setPage }) {
       </div>
       <Card className="p-3 text-center">
         <div className="font-bold text-[12px] text-gray-800 mb-1">💳 Accepted Payment Methods</div>
-        <div className="text-[11px] text-gray-400">📱 MTN MoMo · 📲 Vodafone Cash · 📳 AirtelTigo · 💳 Visa / Mastercard</div>
+        <div className="text-[11px] text-gray-600">📱 MTN MoMo · 📲 Vodafone Cash · 📳 AirtelTigo · 💳 Visa / Mastercard</div>
       </Card>
     </div>
   );
@@ -1274,11 +1287,11 @@ function AboutPage() {
       <h2 className="font-black text-[16px] text-gray-900 mb-3" style={{fontFamily:"Outfit,Arial,sans-serif"}}>About UniPredict Ghana</h2>
       <Card className="p-4 mb-3">
         <div className="font-bold text-[13px] text-gray-900 mb-2">Our Mission</div>
-        <p className="text-[11.5px] text-gray-500 leading-relaxed mb-2">UniPredict Ghana is Ghana's most comprehensive university admission intelligence platform. We help WASSCE students make informed decisions about their applications through accurate eligibility checks, verified cut-off points, and personalised programme recommendations.</p>
-        <p className="text-[11.5px] text-gray-500 leading-relaxed">We cover all 58 accredited Ghanaian universities with over 1,000+ programmes, using the official WASSCE aggregate formula to give precise, programme-specific eligibility results.</p>
+        <p className="text-[11.5px] text-gray-700 leading-relaxed mb-2">UniPredict Ghana is Ghana's most comprehensive university admission intelligence platform. We help WASSCE students make informed decisions about their applications through accurate eligibility checks, verified cut-off points, and personalised programme recommendations.</p>
+        <p className="text-[11.5px] text-gray-700 leading-relaxed">We cover all 58 accredited Ghanaian universities with over 1,000+ programmes, using the official WASSCE aggregate formula to give precise, programme-specific eligibility results.</p>
       </Card>
       <div className="font-bold text-[13px] text-gray-900 mb-1">Meet the Team</div>
-      <p className="text-[11px] text-gray-400 mb-3">Built by young Ghanaians, for Ghanaian students.</p>
+      <p className="text-[11px] text-gray-600 mb-3">Built by young Ghanaians, for Ghanaian students.</p>
       {[
         {name:"Alexander Piasa Asiamah",role:"Founder & CEO · CTO",bio:"Visionary behind UniPredict Ghana. Built the platform from the ground up to make university admissions transparent and accessible for every Ghanaian student.",img:"https://i.imgur.com/6dQfNZr.jpeg"},
         {name:"Gideon Appianing",role:"Co-CTO",bio:"Co-Chief Technology Officer at UniPredict Ghana. Brings deep technical expertise to ensure the platform is robust, fast, and reliable for thousands of students.",img:"https://i.imgur.com/0zoQrig.jpeg"},
@@ -1288,11 +1301,11 @@ function AboutPage() {
           <div>
             <div className="font-black text-[12.5px] text-gray-900 mb-1">{t.name}</div>
             <div className="mb-1.5"><Badge color="violet">{t.role}</Badge></div>
-            <p className="text-[11px] text-gray-400 leading-relaxed">{t.bio}</p>
+            <p className="text-[11px] text-gray-600 leading-relaxed">{t.bio}</p>
           </div>
         </Card>
       ))}
-      <div className="bg-gradient-to-r from-violet-600 to-pink-500 rounded-2xl p-4">
+      <div className="bg-gradient-to-r from-violet-700 to-pink-500 rounded-2xl p-4">
         <div className="font-bold text-[13px] text-white mb-1">🇬🇭 Made in Ghana</div>
         <p className="text-[11.5px] text-white/85 leading-relaxed">Built by Ghanaians for Ghanaian students. We understand the challenges of university admissions in Ghana and are committed to making the process clearer and fairer for every student.</p>
       </div>
@@ -1313,7 +1326,7 @@ function ContactPage() {
           <Card key={c.t} className="p-3 text-center">
             <div className="text-[22px] mb-1.5">{c.e}</div>
             <div className="font-bold text-[10.5px] text-gray-800 mb-0.5">{c.t}</div>
-            <div className="text-[10px] text-gray-400 leading-tight">{c.v}</div>
+            <div className="text-[10px] text-gray-600 leading-tight">{c.v}</div>
           </Card>
         ))}
       </div>
@@ -1321,13 +1334,13 @@ function ContactPage() {
         <Card className="p-4 text-center">
           <div className="text-[36px] mb-2">✅</div>
           <div className="font-bold text-[13px] text-emerald-600 mb-1">Message Sent!</div>
-          <p className="text-[11.5px] text-gray-400">We'll respond within 24 hours. You can also WhatsApp us directly on 0537 889 150.</p>
+          <p className="text-[11.5px] text-gray-600">We'll respond within 24 hours. You can also WhatsApp us directly on 0537 889 150.</p>
         </Card>
       ) : (
         <Card className="p-4">
           <div className="font-bold text-[13px] text-gray-900 mb-3">Send a Message</div>
-          <div className="mb-2.5"><label className="block text-[11px] font-bold text-gray-600 mb-1">Your Name</label><input value={name} onChange={e=>setName(e.target.value)} placeholder="e.g. Kofi Mensah" className="w-full px-3 py-2 border-2 border-violet-100 rounded-xl text-[12px] outline-none focus:border-violet-500 bg-white" style={{WebkitAppearance:"none"}}/></div>
-          <div className="mb-3"><label className="block text-[11px] font-bold text-gray-600 mb-1">Message</label><textarea value={msg} onChange={e=>setMsg(e.target.value)} placeholder="How can we help you?" rows={4} className="w-full px-3 py-2 border-2 border-violet-100 rounded-xl text-[12px] outline-none focus:border-violet-500 bg-white resize-none" style={{WebkitAppearance:"none"}}/></div>
+          <div className="mb-2.5"><label className="block text-[11px] font-bold text-gray-600 mb-1">Your Name</label><input value={name} onChange={e=>setName(e.target.value)} placeholder="e.g. Kofi Mensah" className="w-full px-3 py-2 border-2 border-violet-200 rounded-xl text-[12px] outline-none focus:border-violet-1000 bg-white" style={{WebkitAppearance:"none"}}/></div>
+          <div className="mb-3"><label className="block text-[11px] font-bold text-gray-600 mb-1">Message</label><textarea value={msg} onChange={e=>setMsg(e.target.value)} placeholder="How can we help you?" rows={4} className="w-full px-3 py-2 border-2 border-violet-200 rounded-xl text-[12px] outline-none focus:border-violet-1000 bg-white resize-none" style={{WebkitAppearance:"none"}}/></div>
           <Btn full size="lg" disabled={!name||!msg} onClick={submit}>Send Message →</Btn>
         </Card>
       )}
@@ -1347,9 +1360,9 @@ function FAQPage() {
           <Card key={i} className="overflow-hidden">
             <button onClick={()=>setOpen(open===i?null:i)} className="w-full flex items-center justify-between gap-3 p-3 text-left cursor-pointer select-none outline-none bg-transparent border-0">
               <div className="font-bold text-[12px] text-gray-900 leading-snug flex-1">{f.q}</div>
-              <div className="text-violet-600 font-bold text-[16px] flex-shrink-0">{open===i?"−":"+"}</div>
+              <div className="text-violet-700 font-bold text-[16px] flex-shrink-0">{open===i?"−":"+"}</div>
             </button>
-            {open===i && <div className="px-3 pb-3 text-[11.5px] text-gray-500 leading-relaxed border-t border-violet-50 pt-2">{f.a}</div>}
+            {open===i && <div className="px-3 pb-3 text-[11.5px] text-gray-700 leading-relaxed border-t border-violet-100 pt-2">{f.a}</div>}
           </Card>
         ))}
       </div>
@@ -1364,16 +1377,16 @@ function LegalModal({ doc, onClose }) {
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-start justify-center">
       <div className="bg-white w-full max-w-lg h-full overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b border-violet-100 px-4 py-3 flex items-center justify-between z-10">
+        <div className="sticky top-0 bg-white border-b border-violet-200 px-4 py-3 flex items-center justify-between z-10">
           <div className="font-black text-[14px] text-gray-900" style={{fontFamily:"Outfit,Arial,sans-serif"}}>{data.title}</div>
-          <button onClick={onClose} className="text-gray-400 text-[20px] cursor-pointer active:opacity-60 select-none outline-none border-0 bg-transparent">✕</button>
+          <button onClick={onClose} className="text-gray-600 text-[20px] cursor-pointer active:opacity-85 select-none outline-none border-0 bg-transparent">✕</button>
         </div>
         <div className="px-4 py-5 pb-12 space-y-4">
-          <p className="text-[10.5px] text-gray-400">Last updated: August 2025</p>
+          <p className="text-[10.5px] text-gray-600">Last updated: August 2025</p>
           {data.content.map((s,i)=>(
             <div key={i}>
               <div className="font-bold text-[12.5px] text-gray-900 mb-1">{s.h}</div>
-              <p className="text-[11.5px] text-gray-500 leading-relaxed">{s.p}</p>
+              <p className="text-[11.5px] text-gray-700 leading-relaxed">{s.p}</p>
             </div>
           ))}
         </div>
@@ -1390,42 +1403,42 @@ function Footer({ setPage, setLegal }) {
         <div className="grid grid-cols-2 gap-6 mb-6">
           <div>
             <div className="flex items-center gap-2 mb-3 cursor-pointer" onClick={()=>setPage("home")}>
-              <div className="w-6 h-6 bg-gradient-to-br from-violet-600 to-pink-500 rounded-lg flex items-center justify-center text-[14px]">🎓</div>
+              <div className="w-6 h-6 bg-gradient-to-br from-violet-700 to-pink-500 rounded-lg flex items-center justify-center text-[14px]">🎓</div>
               <span className="font-black text-[13px] text-white">UniPredict Ghana</span>
             </div>
-            <p className="text-[11px] text-gray-400 leading-relaxed mb-3">Ghana's university admission intelligence platform. 58+ institutions, 1,000+ programmes.</p>
+            <p className="text-[11px] text-gray-600 leading-relaxed mb-3">Ghana's university admission intelligence platform. 58+ institutions, 1,000+ programmes.</p>
             <div className="inline-flex items-center gap-1.5 bg-emerald-900/50 border border-emerald-700 rounded-full px-2.5 py-1 text-[10px] font-bold text-emerald-400">● Live 2026</div>
-            <div className="text-[11px] text-gray-500 mt-2">🇬🇭 Made in Ghana</div>
+            <div className="text-[11px] text-gray-700 mt-2">🇬🇭 Made in Ghana</div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <div className="text-[9.5px] font-extrabold text-gray-400 uppercase tracking-wider mb-2">Resources</div>
+              <div className="text-[9.5px] font-extrabold text-gray-600 uppercase tracking-wider mb-2">Resources</div>
               {[["checker","Check Eligibility"],["calculator","Calculator"],["universities","Universities"],["cutoffs","Cut-Offs"],["scholarships","Scholarships"]].map(([id,l])=>(
-                <button key={id} onClick={()=>setPage(id)} className="block text-[11px] text-gray-400 py-0.5 cursor-pointer hover:text-white active:opacity-60 select-none outline-none border-0 bg-transparent text-left">{l}</button>
+                <button key={id} onClick={()=>setPage(id)} className="block text-[11px] text-gray-600 py-0.5 cursor-pointer hover:text-white active:opacity-85 select-none outline-none border-0 bg-transparent text-left">{l}</button>
               ))}
             </div>
             <div>
-              <div className="text-[9.5px] font-extrabold text-gray-400 uppercase tracking-wider mb-2">Company</div>
+              <div className="text-[9.5px] font-extrabold text-gray-600 uppercase tracking-wider mb-2">Company</div>
               {[["about","About Us"],["contact","Contact"],["faq","FAQ"],["pricing","Pricing"],["news","News"]].map(([id,l])=>(
-                <button key={id} onClick={()=>setPage(id)} className="block text-[11px] text-gray-400 py-0.5 cursor-pointer hover:text-white active:opacity-60 select-none outline-none border-0 bg-transparent text-left">{l}</button>
+                <button key={id} onClick={()=>setPage(id)} className="block text-[11px] text-gray-600 py-0.5 cursor-pointer hover:text-white active:opacity-85 select-none outline-none border-0 bg-transparent text-left">{l}</button>
               ))}
             </div>
           </div>
         </div>
         <div className="border-t border-gray-700 pt-4">
-          <div className="text-[9.5px] font-extrabold text-gray-400 uppercase tracking-wider mb-2">Legal</div>
+          <div className="text-[9.5px] font-extrabold text-gray-600 uppercase tracking-wider mb-2">Legal</div>
           <div className="flex flex-wrap gap-3 mb-4">
             {["privacy","terms","disclaimer","refund"].map(k=>(
-              <button key={k} onClick={()=>setLegal(k)} className="text-[11px] text-gray-400 cursor-pointer hover:text-white active:opacity-60 select-none outline-none border-0 bg-transparent capitalize">
+              <button key={k} onClick={()=>setLegal(k)} className="text-[11px] text-gray-600 cursor-pointer hover:text-white active:opacity-85 select-none outline-none border-0 bg-transparent capitalize">
                 {k==="refund"?"Refund Policy":k==="privacy"?"Privacy Policy":k==="terms"?"Terms of Service":"Disclaimer"}
               </button>
             ))}
           </div>
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <div className="text-[10.5px] text-gray-500">© 2025 UniPredict Ghana. All rights reserved.</div>
+            <div className="text-[10.5px] text-gray-700">© 2025 UniPredict Ghana. All rights reserved.</div>
             <div className="flex gap-3">
               {["about","contact"].map(id=>(
-                <button key={id} onClick={()=>setPage(id)} className="text-[10.5px] text-gray-500 underline cursor-pointer capitalize select-none outline-none border-0 bg-transparent">{id}</button>
+                <button key={id} onClick={()=>setPage(id)} className="text-[10.5px] text-gray-700 underline cursor-pointer capitalize select-none outline-none border-0 bg-transparent">{id}</button>
               ))}
             </div>
           </div>
@@ -1438,7 +1451,7 @@ function Footer({ setPage, setLegal }) {
 // ─── STICKY BAR ──────────────────────────────────────────────
 function StickyBar({ setPage }) {
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-30 bg-white/97 backdrop-blur border-t border-violet-100 px-3 py-2 flex gap-2">
+    <div className="fixed bottom-0 left-0 right-0 z-30 bg-white/97 backdrop-blur border-t border-violet-200 px-3 py-2 flex gap-2">
       <Btn full size="sm" onClick={()=>setPage("checker")} style={{flex:1,padding:"10px 6px",fontSize:"11px"}}>🔍 Check Eligibility</Btn>
       <Btn variant="ghost" size="sm" onClick={()=>setPage("aiChat")} style={{flex:1,padding:"10px 6px",fontSize:"10.5px"}}>🤖 AI Counsellor</Btn>
       <Btn variant="ghost" size="sm" onClick={()=>setPage("pricing")} style={{flex:1,padding:"10px 6px",fontSize:"10.5px"}}>💳 Pricing</Btn>
@@ -1462,8 +1475,27 @@ export default function App() {
   useEffect(() => {
     const base = `${SUPA_URL}/rest/v1/`;
     // Load Paystack key
-    fetch(`${base}settings?key=in.(payment_keys)&select=key,value`,{headers:SUPA_H}).then(r=>r.json()).then(d=>{
-      d?.forEach(row=>{ if(row.key==="payment_keys"&&row.value?.paystack) setPaystackKey(row.value.paystack); });
+    fetch(`${base}settings?key=in.(payment_keys,claude_key,appearance)&select=key,value`,{headers:SUPA_H}).then(r=>r.json()).then(d=>{
+      d?.forEach(row=>{
+        if(row.key==="payment_keys"&&row.value?.paystack) setPaystackKey(row.value.paystack);
+        if(row.key==="claude_key"&&row.value?.key) window._claudeKey=row.value.key;
+        if(row.key==="appearance"&&row.value){
+          const a=row.value;
+          if(a.font_size) document.documentElement.style.fontSize=a.font_size+"%";
+          if(a.font_family){
+            const lk=document.createElement("link");lk.rel="stylesheet";
+            lk.href=`https://fonts.googleapis.com/css2?family=${a.font_family.replace(/ /g,"+")}:wght@400;500;600;700;800;900&display=swap`;
+            document.head.appendChild(lk);
+            document.documentElement.style.fontFamily=`'${a.font_family}',sans-serif`;
+          }
+          if(a.heading_font){
+            const lk2=document.createElement("link");lk2.rel="stylesheet";
+            lk2.href=`https://fonts.googleapis.com/css2?family=${a.heading_font.replace(/ /g,"+")}:wght@700;800;900&display=swap`;
+            document.head.appendChild(lk2);
+            document.documentElement.style.setProperty("--font-heading",`'${a.heading_font}',sans-serif`);
+          }
+        }
+      });
     }).catch(()=>{});
     // Load universities
     fetch(`${base}universities?active=eq.true&order=name.asc&select=id,code,name,location,type&limit=1000`,{headers:SUPA_H}).then(r=>r.json()).then(d=>{
@@ -1523,7 +1555,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-violet-50" style={{fontFamily:"Inter,Arial,sans-serif",fontSize:"13px",WebkitTextSizeAdjust:"100%",textSizeAdjust:"100%"}}>
+    <div className="min-h-screen bg-violet-100" style={{fontFamily:"Inter,Arial,sans-serif",fontSize:"13px",WebkitTextSizeAdjust:"100%",textSizeAdjust:"100%"}}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@700;800;900&display=swap');
         *{box-sizing:border-box;-webkit-tap-highlight-color:rgba(0,0,0,0)}
