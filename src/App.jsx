@@ -1189,19 +1189,20 @@ function AIChatPage() {
     const newMsgs = [...msgs, {r:"user",t:msg},{r:"ai",t:"..."}];
     setMsgs(newMsgs); setLoading(true);
     try {
-      const history = newMsgs.slice(0,-1).map(m=>({role:m.r==="ai"?"assistant":"user",content:m.t}));
-      const r = await fetch("https://api.anthropic.com/v1/messages",{
+      const SYSTEM = "You are UniPredict Ghana\'s AI Counsellor. You help Ghanaian SHS students with WASSCE university admissions. You know about: WASSCE aggregate calculation (best 6 from core+electives, lower=better), all 58 Ghanaian universities, KNUST not counting Social Studies, cut-off points, SHS tracks (General Science, General Arts, Business, Home Economics, Visual Arts, Technical, Agricultural Science), scholarships like GETFUND and Mastercard Foundation, and admission form deadlines. Be friendly, concise and helpful. Always respond in plain English suitable for a student.";
+      const history = newMsgs.slice(1,-1).map(m=>({role:m.r==="ai"?"model":"user",parts:[{text:m.t}]}));
+      const geminiKey = window._geminiKey || "";
+      const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`,{
         method:"POST",
-        headers:{"Content-Type":"application/json","x-api-key":window._claudeKey||"","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+        headers:{"Content-Type":"application/json"},
         body:JSON.stringify({
-          model:"claude-haiku-4-5-20251001",
-          max_tokens:512,
-          system:"You are UniPredict Ghana's AI Counsellor. You help Ghanaian SHS students with WASSCE university admissions. You know about: WASSCE aggregate calculation (best 6 from core+electives, lower=better), all 58 Ghanaian universities, KNUST not counting Social Studies, cut-off points, SHS tracks (General Science, General Arts, Business, Home Economics, Visual Arts, Technical, Agricultural Science), scholarships like GETFUND and Mastercard Foundation, and admission form deadlines. Be friendly, concise and helpful. Always respond in plain English suitable for a student.",
-          messages:history
+          system_instruction:{parts:[{text:SYSTEM}]},
+          contents:[...history,{role:"user",parts:[{text:msg}]}],
+          generationConfig:{maxOutputTokens:512,temperature:0.7}
         })
       });
       const d = await r.json();
-      const reply = d?.content?.[0]?.text || "Sorry, I couldn't get a response. Try again.";
+      const reply = d?.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn\'t get a response. Try again.";
       setMsgs(m=>[...m.slice(0,-1),{r:"ai",t:reply}]);
       // Save to Supabase for admin inbox
       fetch(`${SUPA_URL}/rest/v1/ai_inbox`,{method:"POST",headers:{"Content-Type":"application/json",apikey:SUPA_KEY,Authorization:`Bearer ${SUPA_KEY}`,Prefer:"return=minimal"},body:JSON.stringify({question:msg,answer:reply,status:"replied",created_at:new Date().toISOString()})}).catch(()=>{});
@@ -1475,10 +1476,10 @@ export default function App() {
   useEffect(() => {
     const base = `${SUPA_URL}/rest/v1/`;
     // Load Paystack key
-    fetch(`${base}settings?key=in.(payment_keys,claude_key,appearance)&select=key,value`,{headers:SUPA_H}).then(r=>r.json()).then(d=>{
+    fetch(`${base}settings?key=in.(payment_keys,gemini_key,appearance)&select=key,value`,{headers:SUPA_H}).then(r=>r.json()).then(d=>{
       d?.forEach(row=>{
         if(row.key==="payment_keys"&&row.value?.paystack) setPaystackKey(row.value.paystack);
-        if(row.key==="claude_key"&&row.value?.key) window._claudeKey=row.value.key;
+        if(row.key==="gemini_key"&&row.value?.key) window._geminiKey=row.value.key;
         if(row.key==="appearance"&&row.value){
           const a=row.value;
           if(a.font_size) document.documentElement.style.fontSize=a.font_size+"%";
