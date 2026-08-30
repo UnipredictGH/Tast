@@ -7,17 +7,20 @@ const SUPA_H = { apikey: SUPA_KEY, Authorization: `Bearer ${SUPA_KEY}` };
 const GP = { A1:1,B2:2,B3:3,C4:4,C5:5,C6:6,D7:7,E8:8,F9:9 };
 const GR = ["A1","B2","B3","C4","C5","C6","D7","E8","F9"];
 const PRICES = { basic:12, premium:18, bundle:25 };
+const PLAN_CHECKS = { basic:1, premium:3, bundle:5 }; // checks included per plan
 const KNUST_SOC_EXCEPTIONS = ["political science","publishing studies","law"];
 const UNI_EXCL_SOC = ["KNUST","UMAT"];
 
+// TRACKS — icons and subs are static; electives are fetched dynamically from Supabase
+// Fallback electives used if Supabase fetch fails
 const TRACKS = {
-  "General Science":{ icon:"🔬", sub:"Biology, Chemistry, Physics, Elective Maths", electives:["Biology","Chemistry","Physics","Elective Mathematics","Geography","Agricultural Science","ICT / Computing"] },
-  "General Arts":{ icon:"📚", sub:"Literature, Government, History, Economics", electives:["Literature in English","Government","History","Economics","French","Geography","Christian Religious Studies","Islamic Religious Studies","Twi","Ga","Arabic"] },
-  "Business":{ icon:"💼", sub:"Financial Accounting, Economics, Business Mgt", electives:["Financial Accounting","Business Management","Economics","Elective Mathematics","Cost Accounting","Clerical Office Duties","ICT / Computing","Business Law"] },
-  "Home Economics":{ icon:"🏠", sub:"Food & Nutrition, Clothing & Textiles", electives:["Food and Nutrition","Clothing and Textiles","Management in Living","Biology","Chemistry","Economics"] },
-  "Visual Arts":{ icon:"🎨", sub:"General Knowledge in Art, Graphic Design", electives:["General Knowledge in Art","Graphic Design","Picture Making","Sculpture","Textiles","Basketry","Leatherwork","Jewellery"] },
-  "Technical":{ icon:"⚙️", sub:"Technical Drawing, Applied Electricity", electives:["Technical Drawing","Construction","Metalwork","Applied Electricity","Electronics","Auto Mechanics","Physics","Elective Mathematics","Plumbing"] },
-  "Agricultural Science":{ icon:"🌱", sub:"Crop Husbandry, Animal Husbandry", electives:["Crop Husbandry & Horticulture","Animal Husbandry","Fisheries","Forestry & Wildlife","Elective Mathematics","Biology","Chemistry"] },
+  "General Science":{ icon:"🔬", sub:"Biology, Chemistry, Physics, Elective Maths", electives:["Biology","Chemistry","Physics","Elective Mathematics","Geography","Agricultural Science","Information and Communication Technology","Computer Science"] },
+  "General Arts":{ icon:"📚", sub:"Literature, Government, History, Economics", electives:["Literature in English","Government","History","Economics","French","Geography","Christian Religious Studies","Islamic Religious Studies","Ghanaian Language","Arabic","Elective Mathematics","Music","Information and Communication Technology"] },
+  "Business":{ icon:"💼", sub:"Financial Accounting, Economics, Business Mgt", electives:["Financial Accounting","Business Management","Economics","Elective Mathematics","Cost Accounting","Business Mathematics","Information and Communication Technology","French"] },
+  "Home Economics":{ icon:"🏠", sub:"Food & Nutrition, Clothing & Textiles", electives:["Food and Nutrition","Clothing and Textiles","Management in Living","Biology","Chemistry","Economics","Agricultural Science","Information and Communication Technology"] },
+  "Visual Arts":{ icon:"🎨", sub:"General Knowledge in Art, Graphic Design", electives:["General Knowledge in Art","Art and Design Foundation","Art and Design Studio","Graphic Design","Picture Making","Sculpture","Ceramics","Textiles","Leatherwork","Design and Communication Technology","Music","Information and Communication Technology","Elective Mathematics"] },
+  "Technical":{ icon:"⚙️", sub:"Technical Drawing, Building Construction", electives:["Technical Drawing","Building Construction","Woodwork","Wood Technology","Automobile Technology","Metal Technology","Electrical and Electronic Technology","Applied Technology","Design and Communication Technology","Physics","Chemistry","Elective Mathematics","Information and Communication Technology"] },
+  "Agricultural Science":{ icon:"🌱", sub:"Crop Husbandry, Animal Husbandry", electives:["General Agriculture","Agricultural Science","Crop Science","Crop Husbandry","Animal Husbandry","Physics","Chemistry","Biology","Elective Mathematics","Geography","Information and Communication Technology"] },
 };
 
 const FAQS = [
@@ -85,37 +88,140 @@ function getBest(cg, k) {
 function isSciTrack(track) {
   return ["General Science","Technical","Agricultural Science"].includes(track);
 }
-function calcAggForUni(uni, prog, track, cg, el, eg) {
-  const e=getBest(cg,"eng"), m=getBest(cg,"maths"), sc=getBest(cg,"sci"), so=getBest(cg,"soc");
-  const pts = [];
-  if (e) pts.push(GP[e]);
-  if (m) pts.push(GP[m]);
-  el.forEach(s => { if (eg[s]) pts.push(GP[eg[s]]); });
-  const pn = (prog.name || "").toLowerCase();
-  const isKnustSocEx = uni === "KNUST" && KNUST_SOC_EXCEPTIONS.some(x => pn.includes(x));
-  if (isKnustSocEx) {
-    if (so) pts.push(GP[so]);
-  } else if (UNI_EXCL_SOC.includes(uni)) {
-    if (sc) pts.push(GP[sc]);
-  } else {
-    if (sc) pts.push(GP[sc]);
-    if (so) pts.push(GP[so]);
+/* ── AGGREGATE CALCULATION ENGINE ─────────────────────────────────────────
+ * Rules sourced from official university admission notices and aggregate_rules table.
+ *
+ * SYSTEM A — KNUST (KNUST_COMPRESSED_24):
+ *   Core: English + Core Maths + Integrated Science (Social Studies NEVER counted)
+ *   Grades: C4=C5=C6=4 (compressed)
+ *   Exceptions: Law, Political Science, Publishing Studies → Social Studies replaces Integrated Science
+ *
+ * SYSTEM B — UG (UG_STANDARD_24):
+ *   Science programmes: English + Core Maths + Integrated Science
+ *   Non-Science programmes: English + Core Maths + Social Studies (fixed, NOT swappable)
+ *   Grades: standard A1=1..C6=6
+ *
+ * SYSTEM C — UHAS / UMaT / UTAS / Sunyani TU (SCI_ONLY):
+ *   Core: English + Core Maths + Integrated Science ALWAYS
+ *   Social Studies is NEVER counted regardless of track or programme
+ *   Grades: standard
+ *
+ * SYSTEM D — All other universities (STANDARD_WASSCE_36):
+ *   Science/Technical/Agricultural tracks → Integrated Science as 3rd core
+ *   Arts/Business/Home Economics/Visual Arts →
+ *     if programme is engineering/science type → Integrated Science
+ *     otherwise → BEST of (Integrated Science, Social Studies) — whichever is lower score
+ *   Grades: standard A1=1..C6=6
+ * ─────────────────────────────────────────────────────────────────────── */
+
+// Universities where Integrated Science is ALWAYS 3rd core (Social Studies never counted)
+const SCI_ONLY_UNIS = ["KNUST","UMAT","UHAS","UTAS","SUNYANI"];
+
+// Engineering/science/health programme keywords — force Integrated Science as 3rd core
+const SCI_PROG_KEYWORDS = [
+  "engineering","science","nursing","midwifery","pharmacy","medicine","medical",
+  "laboratory","physiotherapy","optometry","biomedical","radiograph","diagnostic",
+  "nutrition","dietetics","health","environmental","chemistry","physics","biology",
+  "mathematics","statistics","actuarial","computer","information technology",
+  "petroleum","mining","geology","geoscience","agriculture","aquaculture",
+  "fisheries","forestry","technology","technical","renewable","cyber","data"
+];
+
+function getGP(uni) {
+  // KNUST compresses C4/C5/C6 all to 4 points
+  return uni === "KNUST"
+    ? {"A1":1,"B2":2,"B3":3,"C4":4,"C5":4,"C6":4,"D7":7,"E8":8,"F9":9}
+    : {"A1":1,"B2":2,"B3":3,"C4":4,"C5":5,"C6":6,"D7":7,"E8":8,"F9":9};
+}
+
+function selectThirdCore(uni, prog, track, sc, so, GP2) {
+  const pn = (prog?.name || "").toLowerCase();
+  const sciTrack = ["General Science","Agricultural Science","Technical"].includes(track);
+
+  // KNUST special exceptions — Social Studies replaces Integrated Science
+  if (uni === "KNUST") {
+    const isEx = KNUST_SOC_EXCEPTIONS.some(x => pn.includes(x));
+    if (isEx) return so ? GP2[so] : null;
+    return sc ? GP2[sc] : null; // All other KNUST: always Integrated Science
   }
-  pts.sort((a, b) => a - b);
-  const b6 = pts.slice(0, 6);
+
+  // UG — Science programmes use Integrated Science, Non-Science use Social Studies (fixed)
+  if (uni === "UG") {
+    if (sciTrack) return sc ? GP2[sc] : null;
+    return so ? GP2[so] : null; // Arts/Business at UG: Social Studies is fixed 3rd core
+  }
+
+  // UHAS, UMaT, UTAS, Sunyani TU — always Integrated Science, Social Studies never counted
+  if (SCI_ONLY_UNIS.includes(uni)) {
+    return sc ? GP2[sc] : null;
+  }
+
+  // All other universities (UCC, UDS, UENR, UEW, UPSA, GIMPA, technical unis etc)
+  if (sciTrack) {
+    // Science/Technical/Agricultural track → Integrated Science
+    return sc ? GP2[sc] : null;
+  }
+
+  // Arts/Business/Home Economics/Visual Arts tracks:
+  // Check if programme itself is science/engineering type
+  const progIsSci = SCI_PROG_KEYWORDS.some(k => pn.includes(k));
+  if (progIsSci) {
+    return sc ? GP2[sc] : null; // Force Integrated Science for sci/eng programmes
+  }
+
+  // Pure Arts/Business programmes → best of Social Studies or Integrated Science
+  const scPts = sc ? GP2[sc] : 999;
+  const soPts = so ? GP2[so] : 999;
+  const best = Math.min(scPts, soPts);
+  return best < 999 ? best : null;
+}
+
+function calcAggForUni(uni, prog, track, cg, el, eg) {
+  const GP2 = getGP(uni);
+  const e=getBest(cg,"eng"), m=getBest(cg,"maths"), sc=getBest(cg,"sci"), so=getBest(cg,"soc");
+
+  const pool = [];
+  if (e) pool.push(GP2[e]);
+  if (m) pool.push(GP2[m]);
+
+  const thirdCore = selectThirdCore(uni, prog, track, sc, so, GP2);
+  if (thirdCore !== null) pool.push(thirdCore);
+
+  el.forEach(s => { if (eg[s]) pool.push(GP2[eg[s]]); });
+
+  pool.sort((a, b) => a - b);
+  const b6 = pool.slice(0, 6);
   if (b6.length < 6) return null;
   return b6.reduce((s, p) => s + p, 0);
 }
+
 function calcAgg(track, cg, el, eg) {
+  // General aggregate shown on student profile — uses standard grading, no university context
+  const GP2 = {"A1":1,"B2":2,"B3":3,"C4":4,"C5":5,"C6":6,"D7":7,"E8":8,"F9":9};
   const e=getBest(cg,"eng"), m=getBest(cg,"maths"), sc=getBest(cg,"sci"), so=getBest(cg,"soc");
-  const pts = [];
-  if (e) pts.push(GP[e]);
-  if (m) pts.push(GP[m]);
-  el.forEach(s => { if (eg[s]) pts.push(GP[eg[s]]); });
-  if (sc) pts.push(GP[sc]);
-  if (so) pts.push(GP[so]);
-  pts.sort((a, b) => a - b);
-  const b6 = pts.slice(0, 6);
+  const sciTrack = ["General Science","Agricultural Science","Technical"].includes(track);
+
+  // FIXED: Build pool with ONLY the correct 3rd core subject — never both sci and soc
+  const pool = [];
+  if (e) pool.push(GP2[e]);
+  if (m) pool.push(GP2[m]);
+
+  if (sciTrack) {
+    // Science/Agricultural/Technical: ONLY Integrated Science — Social Studies NEVER counted
+    if (sc) pool.push(GP2[sc]);
+  } else {
+    // Arts/Business/Home Ec/Visual Arts: best of Integrated Science OR Social Studies (one only)
+    const scPts = sc ? GP2[sc] : 999;
+    const soPts = so ? GP2[so] : 999;
+    const best = Math.min(scPts, soPts);
+    if (best < 999) pool.push(best);
+  }
+
+  // Add elective grades — these are the student's chosen elective subjects only
+  el.forEach(s => { if (eg[s]) pool.push(GP2[eg[s]]); });
+
+  pool.sort((a, b) => a - b);
+  const b6 = pool.slice(0, 6);
   if (b6.length < 6) return null;
   return b6.reduce((s, p) => s + p, 0);
 }
@@ -400,9 +506,9 @@ function HomePage({ setPage, unis, progs }) {
           </div>
           <div className="grid grid-cols-3 gap-2.5 mb-5">
             {[
-              {icon:"🏛️",n:"Basic",p:PRICES.basic,sub:"1 University"},
-              {icon:"⭐",n:"Premium",p:PRICES.premium,sub:"All Universities",pop:true},
-              {icon:"🔥",n:"Bundle",p:PRICES.bundle,sub:"3 Checks"},
+              {icon:"🏛️",n:"Basic",p:PRICES.basic,sub:"1 Check"},
+              {icon:"⭐",n:"Premium",p:PRICES.premium,sub:"3 Checks",pop:true},
+              {icon:"🔥",n:"Bundle",p:PRICES.bundle,sub:"5 Checks"},
             ].map(plan => (
               <button key={plan.n} onClick={() => setPage("checker")}
                 className={`relative rounded-2xl p-3 text-center cursor-pointer active:scale-95 transition-all select-none outline-none border-0 ${plan.pop ? "bg-white/25 border-2 border-white/80" : "bg-white/15 border border-white/25"}`}>
@@ -439,6 +545,42 @@ function CheckerPage({ unis, progs, schols, paystackKey }) {
   const [payStep, setPayStep] = useState(null);
   const [res, setRes] = useState(null);
   const [tab, setTab] = useState("q");
+  const [quota, setQuota] = useState(null); // {remaining, plan} for returning students
+  const [checkingQuota, setCheckingQuota] = useState(false);
+
+  const lookupQuota = async (ph) => {
+    if (!ph || ph.length < 10) return;
+    setCheckingQuota(true);
+    const data = await fetch(`${SUPA_URL}/rest/v1/check_quota?phone=eq.${encodeURIComponent(ph)}&select=remaining,plan`,{headers:SUPA_H}).then(r=>r.json()).catch(()=>[]);
+    setQuota(data?.[0] || null);
+    setCheckingQuota(false);
+  };
+
+  const useRemainingCheck = async () => {
+    if (!quota || quota.remaining < 1) return;
+    // Deduct 1 check
+    await fetch(`${SUPA_URL}/rest/v1/check_quota?phone=eq.${encodeURIComponent(phone)}`,{
+      method:"PATCH",
+      headers:{...SUPA_H,"Content-Type":"application/json"},
+      body: JSON.stringify({ remaining:quota.remaining-1, updated_at:new Date().toISOString() })
+    }).catch(()=>{});
+    // Save student check
+    await fetch(`${SUPA_URL}/rest/v1/student_checks`, {
+      method:"POST",
+      headers:{...SUPA_H,"Content-Type":"application/json","Prefer":"return=representation"},
+      body: JSON.stringify({
+        phone, email:email||null, plan:quota.plan, track, prog_type:progType, scope,
+        pref_uni:prefUni||null, sittings:sit,
+        grades_core:{ eng:getBest(cg,"eng"), maths:getBest(cg,"maths"), sci:getBest(cg,"sci"), soc:getBest(cg,"soc") },
+        grades_raw:cg, electives:el, elective_grades:eg,
+        aggregate:calcAgg(track,cg,el,eg),
+        payment_ref:"quota-used", checked_at:new Date().toISOString()
+      })
+    }).catch(()=>{});
+    setQuota(q => ({...q, remaining:q.remaining-1}));
+    setRes(runAnalysis({ track, cg, el, eg, scope, prefUni, progType, progs, schols }));
+    go(6);
+  };
 
   const go = (n) => { setStep(n); window.scrollTo(0,0); };
 
@@ -460,14 +602,45 @@ function CheckerPage({ unis, progs, schols, paystackKey }) {
       currency: "GHS",
       ref: "UNI-" + Date.now(),
       metadata: { plan, phone },
-      callback: (response) => {
+      callback: async (response) => {
         setPayStep("done");
-        fetch(`${SUPA_URL}/rest/v1/payments`, {
+        const checksGranted = PLAN_CHECKS[plan] || 1;
+
+        // Save payment record
+        await fetch(`${SUPA_URL}/rest/v1/payments`, {
           method:"POST",
           headers:{...SUPA_H,"Content-Type":"application/json","Prefer":"return=representation"},
           body: JSON.stringify({ reference:response.reference, plan, amount:amt*100, currency:"GHS", phone, status:"success", verified_at:new Date().toISOString() })
         }).catch(()=>{});
-        fetch(`${SUPA_URL}/rest/v1/student_checks`, {
+
+        // Check if quota record exists for this phone
+        const existing = await fetch(`${SUPA_URL}/rest/v1/check_quota?phone=eq.${encodeURIComponent(phone)}&select=id,remaining,plan`,{headers:SUPA_H}).then(r=>r.json()).catch(()=>[]);
+
+        if (existing?.[0]?.id) {
+          // Add checks to existing quota
+          const newRemaining = (existing[0].remaining || 0) + checksGranted;
+          await fetch(`${SUPA_URL}/rest/v1/check_quota?id=eq.${existing[0].id}`,{
+            method:"PATCH",
+            headers:{...SUPA_H,"Content-Type":"application/json"},
+            body: JSON.stringify({ remaining:newRemaining, plan, updated_at:new Date().toISOString() })
+          }).catch(()=>{});
+        } else {
+          // Create new quota record
+          await fetch(`${SUPA_URL}/rest/v1/check_quota`,{
+            method:"POST",
+            headers:{...SUPA_H,"Content-Type":"application/json","Prefer":"return=representation"},
+            body: JSON.stringify({ phone, plan, remaining:checksGranted, total_purchased:checksGranted, created_at:new Date().toISOString(), updated_at:new Date().toISOString() })
+          }).catch(()=>{});
+        }
+
+        // Deduct 1 check and save result
+        await fetch(`${SUPA_URL}/rest/v1/check_quota?phone=eq.${encodeURIComponent(phone)}`,{
+          method:"PATCH",
+          headers:{...SUPA_H,"Content-Type":"application/json"},
+          body: JSON.stringify({ remaining: Math.max(0,(existing?.[0]?.remaining||0)+checksGranted-1), updated_at:new Date().toISOString() })
+        }).catch(()=>{});
+
+        await fetch(`${SUPA_URL}/rest/v1/student_checks`, {
           method:"POST",
           headers:{...SUPA_H,"Content-Type":"application/json","Prefer":"return=representation"},
           body: JSON.stringify({
@@ -479,6 +652,7 @@ function CheckerPage({ unis, progs, schols, paystackKey }) {
             payment_ref:response.reference, checked_at:new Date().toISOString()
           })
         }).catch(()=>{});
+
         setTimeout(() => {
           setPayStep(null);
           setRes(runAnalysis({ track, cg, el, eg, scope, prefUni, progType, progs, schols }));
@@ -734,13 +908,35 @@ function CheckerPage({ unis, progs, schols, paystackKey }) {
               </select>
             )}
           </div>
+          {/* Returning student quota check */}
+          {phone && phone.length >= 10 && quota === null && !checkingQuota && (
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 mb-3">
+              <div className="font-bold text-[11.5px] text-blue-700 mb-1">Already paid before?</div>
+              <div className="text-[11px] text-gray-600 mb-2">Enter your phone number above then tap to check your remaining checks.</div>
+              <Btn size="sm" onClick={() => lookupQuota(phone)}>Check Remaining Checks</Btn>
+            </div>
+          )}
+          {checkingQuota && <div className="text-[11px] text-violet-600 mb-3 text-center">Checking your quota...</div>}
+          {quota && quota.remaining > 0 && (
+            <div className="bg-green-50 border-2 border-green-400 rounded-xl p-3 mb-3">
+              <div className="font-bold text-[12px] text-green-700 mb-0.5">✅ You have {quota.remaining} check{quota.remaining > 1 ? "s" : ""} remaining!</div>
+              <div className="text-[11px] text-gray-600 mb-2">Use one of your remaining checks — no payment needed.</div>
+              <Btn variant="success" full onClick={useRemainingCheck}>Use a Check ({quota.remaining} left) →</Btn>
+            </div>
+          )}
+          {quota && quota.remaining === 0 && (
+            <div className="bg-amber-50 border border-amber-300 rounded-xl p-3 mb-3">
+              <div className="font-bold text-[11.5px] text-amber-700 mb-0.5">⚠️ No checks remaining</div>
+              <div className="text-[11px] text-gray-600">You've used all your checks. Purchase a new plan below.</div>
+            </div>
+          )}
           <div className="bg-violet-100 border-2 border-violet-200 rounded-xl p-3 mb-4">
             <div className="font-bold text-[11.5px] text-violet-700 mb-0.5">Payment required to unlock results</div>
             <div className="text-[11px] text-gray-700">Choose a plan and pay securely via Mobile Money or card.</div>
           </div>
           <div className="flex gap-2">
             <Btn variant="ghost" size="md" onClick={() => go(4)}>← Back</Btn>
-            <Btn full size="lg" onClick={() => setPayStep("plan")}>Calculate My Results →</Btn>
+            <Btn full size="lg" onClick={() => setPayStep("plan")}>Buy a Plan →</Btn>
           </div>
         </div>
       )}
@@ -859,9 +1055,9 @@ function CheckerPage({ unis, progs, schols, paystackKey }) {
               <>
                 <h3 className="font-black text-[14px] text-gray-900 mb-3" style={{fontFamily:"Outfit,Arial,sans-serif"}}>Choose Your Plan</h3>
                 {[
-                  ["basic","🏛️",`Basic — GHC${PRICES.basic}`,"1 university only",false],
-                  ["premium","⭐",`Premium — GHC${PRICES.premium}`,"All 58 universities",true],
-                  ["bundle","🔥",`Bundle — GHC${PRICES.bundle}`,"3 checks — best value",false],
+                  ["basic","🏛️",`Basic — GHC${PRICES.basic}`,"1 university · 1 check",false],
+                  ["premium","⭐",`Premium — GHC${PRICES.premium}`,"All 58 universities · 3 checks",true],
+                  ["bundle","🔥",`Bundle — GHC${PRICES.bundle}`,"All 58 universities · 5 checks",false],
                 ].map(([id,icon,name,desc,pop]) => (
                   <button key={id}
                     onClick={() => setPlan(id)}
@@ -1252,8 +1448,8 @@ function PricingPage({ setPage }) {
       <div className="space-y-3 mb-4">
         {[
           {id:"basic",icon:"🏛️",name:"Basic",price:PRICES.basic,sub:"1 University · 1 Check",features:["1 university eligibility check","Full subject verification","Career paths per programme"],pop:false},
-          {id:"premium",icon:"⭐",name:"Premium",price:PRICES.premium,sub:"All Universities · 1 Check",features:["All 58 universities checked","Full ranked results","Scholarship matches","Career paths & prospects"],pop:true},
-          {id:"bundle",icon:"🔥",name:"Bundle",price:PRICES.bundle,sub:"All Universities · 3 Checks",features:["3 full premium checks","Share with friends","Best value option"],pop:false},
+          {id:"premium",icon:"⭐",name:"Premium",price:PRICES.premium,sub:"All Universities · 3 Checks",features:["All 58 universities checked","3 full checks","Scholarship matches","Career paths & prospects"],pop:true},
+          {id:"bundle",icon:"🔥",name:"Bundle",price:PRICES.bundle,sub:"All Universities · 5 Checks",features:["5 full premium checks","Best value option","Share with friends or family"],pop:false},
         ].map(p=>(
           <Card key={p.id} className={`p-4 relative ${p.pop?"border-2 border-violet-1000 shadow-md":""}`}>
             {p.pop&&<div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-violet-700 to-pink-500 text-white text-[9.5px] font-black px-3 py-0.5 rounded-full whitespace-nowrap">MOST POPULAR</div>}
@@ -1294,15 +1490,19 @@ function AboutPage() {
       <div className="font-bold text-[13px] text-gray-900 mb-1">Meet the Team</div>
       <p className="text-[11px] text-gray-600 mb-3">Built by young Ghanaians, for Ghanaian students.</p>
       {[
-        {name:"Alexander Piasa Asiamah",role:"Founder & CEO · CTO",bio:"Visionary behind UniPredict Ghana. Built the platform from the ground up to make university admissions transparent and accessible for every Ghanaian student.",img:"https://i.imgur.com/6dQfNZr.jpeg"},
-        {name:"Gideon Appianing",role:"Co-CTO",bio:"Co-Chief Technology Officer at UniPredict Ghana. Brings deep technical expertise to ensure the platform is robust, fast, and reliable for thousands of students.",img:"https://i.imgur.com/0zoQrig.jpeg"},
+        {name:"Alexander Piasa Asiamah",role:"Founder & CEO · CTO",bio:"Visionary behind UniPredict Ghana. Built the platform from the ground up to make university admissions transparent and accessible for every Ghanaian student.",img:"https://i.imgur.com/6dQfNZr.jpeg",linkedin:"https://www.linkedin.com/in/alexander-piasa-asiamah-557265387"},
+        {name:"Gideon Appianing",role:"Co-CTO",bio:"Co-Chief Technology Officer at UniPredict Ghana. Brings deep technical expertise to ensure the platform is robust, fast, and reliable for thousands of students.",img:"https://i.imgur.com/0zoQrig.jpeg",linkedin:"https://www.linkedin.com/in/gideon-appianing"},
       ].map(t=>(
         <Card key={t.name} className="p-3 flex gap-3 mb-3">
           <img src={t.img} alt={t.name} className="w-16 h-16 rounded-full object-cover border-2 border-violet-200 flex-shrink-0" onError={e=>e.target.style.display="none"}/>
-          <div>
+          <div className="flex-1">
             <div className="font-black text-[12.5px] text-gray-900 mb-1">{t.name}</div>
             <div className="mb-1.5"><Badge color="violet">{t.role}</Badge></div>
-            <p className="text-[11px] text-gray-600 leading-relaxed">{t.bio}</p>
+            <p className="text-[11px] text-gray-600 leading-relaxed mb-2">{t.bio}</p>
+            <a href={t.linkedin} target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:4,background:"#0077b5",color:"#fff",borderRadius:8,padding:"4px 10px",fontSize:10,fontWeight:700,textDecoration:"none"}}>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+              LinkedIn
+            </a>
           </div>
         </Card>
       ))}
@@ -1521,6 +1721,26 @@ export default function App() {
         }
       }).catch(()=>{});
     }).catch(()=>{});
+    // Load SHS electives dynamically from Supabase and merge into TRACKS
+    fetch(`${base}shs_programmes?select=id,name&limit=20`,{headers:SUPA_H}).then(r=>r.json()).then(programmes=>{
+      if(!programmes?.length) return;
+      // For each programme, fetch its electives
+      Promise.all(programmes.map(prog =>
+        fetch(`${base}shs_programme_electives?programme_id=eq.${prog.id}&select=subject_id,shs_elective_subjects(name)&limit=100`,{headers:SUPA_H})
+          .then(r=>r.json())
+          .then(links => ({
+            track: prog.name,
+            electives: (links||[]).map(l=>l.shs_elective_subjects?.name).filter(Boolean)
+          }))
+      )).then(results => {
+        results.forEach(({track, electives}) => {
+          if(TRACKS[track] && electives.length > 0) {
+            TRACKS[track].electives = electives;
+          }
+        });
+      }).catch(()=>{});
+    }).catch(()=>{});
+
     // Load scholarships
     fetch(`${base}scholarships?order=name.asc&select=*&limit=500`,{headers:SUPA_H}).then(r=>r.json()).then(d=>{
       if(d?.length) setSchols(d.map(s=>({name:s.name,org:s.organization||"",amount:s.amount||"",deadline:s.deadline||""})));
