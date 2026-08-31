@@ -1123,7 +1123,7 @@ function CheckerPage({ unis, progs, schols, paystackKey }) {
                 </div>
                 <div className="flex gap-2">
                   <Btn variant="ghost" size="md" onClick={() => setPayStep("plan")}>← Back</Btn>
-                  <Btn full size="lg" disabled={!phone} onClick={() => setPayStep("confirm")}>Pay GHC{amt} →</Btn>
+                  <Btn full size="lg" disabled={!phone} onClick={() => setPayStep("doPaystack")}>Pay GHC{amt} →</Btn>
                 </div>
               </>
             )}
