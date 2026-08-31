@@ -196,34 +196,35 @@ function calcAggForUni(uni, prog, track, cg, el, eg) {
 }
 
 function calcAgg(track, cg, el, eg) {
-  // General aggregate shown on student profile — uses standard grading, no university context
+  // CORRECT WASSCE aggregate = 3 FIXED cores + best 3 electives
+  // Cores are MANDATORY — they cannot be dropped even if grade is bad
   const GP2 = {"A1":1,"B2":2,"B3":3,"C4":4,"C5":5,"C6":6,"D7":7,"E8":8,"F9":9};
   const e=getBest(cg,"eng"), m=getBest(cg,"maths"), sc=getBest(cg,"sci"), so=getBest(cg,"soc");
   const sciTrack = ["General Science","Agricultural Science","Technical"].includes(track);
 
-  // FIXED: Build pool with ONLY the correct 3rd core subject — never both sci and soc
-  const pool = [];
-  if (e) pool.push(GP2[e]);
-  if (m) pool.push(GP2[m]);
-
+  // Step 1: Build the 3 fixed core points (all mandatory)
+  const cores = [];
+  if (e) cores.push(GP2[e]);   // English — always included
+  if (m) cores.push(GP2[m]);   // Core Maths — always included
+  // 3rd core: Integrated Science for science tracks, best of sci/soc for arts/business
   if (sciTrack) {
-    // Science/Agricultural/Technical: ONLY Integrated Science — Social Studies NEVER counted
-    if (sc) pool.push(GP2[sc]);
+    if (sc) cores.push(GP2[sc]); // Integrated Science only
   } else {
-    // Arts/Business/Home Ec/Visual Arts: best of Integrated Science OR Social Studies (one only)
     const scPts = sc ? GP2[sc] : 999;
     const soPts = so ? GP2[so] : 999;
     const best = Math.min(scPts, soPts);
-    if (best < 999) pool.push(best);
+    if (best < 999) cores.push(best);
   }
 
-  // Add elective grades — these are the student's chosen elective subjects only
-  el.forEach(s => { if (eg[s]) pool.push(GP2[eg[s]]); });
+  // Step 2: Get all elective points and pick the best 3
+  const elPts = [];
+  el.forEach(s => { if (eg[s]) elPts.push(GP2[eg[s]]); });
+  elPts.sort((a, b) => a - b); // sort ascending — lowest = best
+  const best3El = elPts.slice(0, 3); // pick 3 best electives
 
-  pool.sort((a, b) => a - b);
-  const b6 = pool.slice(0, 6);
-  if (b6.length < 6) return null;
-  return b6.reduce((s, p) => s + p, 0);
+  // Step 3: Total = sum of 3 cores + sum of best 3 electives
+  if (cores.length < 3 || best3El.length < 3) return null;
+  return cores.reduce((s,p)=>s+p,0) + best3El.reduce((s,p)=>s+p,0);
 }
 function runAnalysis({ track, cg, el, eg, scope, prefUni, progType, progs, schols }) {
   const agg = calcAgg(track, cg, el, eg);
@@ -593,9 +594,18 @@ function CheckerPage({ unis, progs, schols, paystackKey }) {
 
   const doPaystack = () => {
     const amt = PRICES[plan];
-    if (typeof window.PaystackPop === "undefined") { alert("Payment could not load. Please refresh."); return; }
-    if (!paystackKey) { alert("Payment not configured. Contact UniPredict Ghana: 0537 889 150"); return; }
-    window.PaystackPop.setup({
+    console.log("doPaystack called", { plan, amt, paystackKey: paystackKey ? "loaded" : "MISSING", PaystackPop: typeof window.PaystackPop });
+    if (typeof window.PaystackPop === "undefined") {
+      setPayStep(null);
+      alert("Paystack could not load. Please check your internet connection and refresh the page.");
+      return;
+    }
+    if (!paystackKey) {
+      setPayStep(null);
+      alert("Payment is not yet configured. Please contact UniPredict Ghana on WhatsApp: 0537 889 150");
+      return;
+    }
+    const handler = window.PaystackPop.setup({
       key: paystackKey,
       email: email || "student@unipredictghana.com",
       amount: amt * 100,
@@ -659,8 +669,9 @@ function CheckerPage({ unis, progs, schols, paystackKey }) {
           go(6);
         }, 2000);
       },
-      onClose: () => {},
-    }).openIframe();
+      onClose: () => { console.log("Paystack popup closed"); },
+    });
+    handler.openIframe();
   };
 
   const electives = TRACKS[track]?.electives || [];
@@ -1678,7 +1689,13 @@ export default function App() {
     // Load Paystack key
     fetch(`${base}settings?key=in.(payment_keys,gemini_key,appearance)&select=key,value`,{headers:SUPA_H}).then(r=>r.json()).then(d=>{
       d?.forEach(row=>{
-        if(row.key==="payment_keys"&&row.value?.paystack) setPaystackKey(row.value.paystack);
+        if(row.key==="payment_keys") {
+          // Try active key first, then fall back to test/live public keys
+          const v = row.value || {};
+          const mode = v.mode || "test";
+          const key = v.paystack || (mode==="live" ? v.live_public : v.test_public) || v.test_public || v.live_public || "";
+          if(key) setPaystackKey(key);
+        }
         if(row.key==="gemini_key"&&row.value?.key) window._geminiKey=row.value.key;
         if(row.key==="appearance"&&row.value){
           const a=row.value;
