@@ -643,10 +643,12 @@ function CheckerPage({ unis, progs, schols, paystackKey }) {
       currency: "GHS",
       ref: "UNI-" + Date.now(),
       metadata: { plan, phone },
-      callback: async (response) => {
+      callback: (response) => {
         setPayStep("done");
         const checksGranted = PLAN_CHECKS[plan] || 1;
 
+        // Run all async work inside an immediately-invoked async function
+        (async () => {
         // Save payment record
         await fetch(`${SUPA_URL}/rest/v1/payments`, {
           method:"POST",
@@ -699,6 +701,7 @@ function CheckerPage({ unis, progs, schols, paystackKey }) {
           setRes(runAnalysis({ track, cg, el, eg, scope, prefUni, progType, progs, schols }));
           go(6);
         }, 2000);
+        })(); // end async IIFE
       },
       onClose: () => { console.log("Paystack popup closed"); },
     });
