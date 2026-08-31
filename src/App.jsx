@@ -177,22 +177,25 @@ function selectThirdCore(uni, prog, track, sc, so, GP2) {
 }
 
 function calcAggForUni(uni, prog, track, cg, el, eg) {
+  // CORRECT: 3 FIXED cores + best 3 electives
   const GP2 = getGP(uni);
   const e=getBest(cg,"eng"), m=getBest(cg,"maths"), sc=getBest(cg,"sci"), so=getBest(cg,"soc");
 
-  const pool = [];
-  if (e) pool.push(GP2[e]);
-  if (m) pool.push(GP2[m]);
-
+  // Step 1: 3 fixed mandatory cores
+  const cores = [];
+  if (e) cores.push(GP2[e]);
+  if (m) cores.push(GP2[m]);
   const thirdCore = selectThirdCore(uni, prog, track, sc, so, GP2);
-  if (thirdCore !== null) pool.push(thirdCore);
+  if (thirdCore !== null) cores.push(thirdCore);
 
-  el.forEach(s => { if (eg[s]) pool.push(GP2[eg[s]]); });
+  // Step 2: best 3 electives from student's selected subjects
+  const elPts = [];
+  el.forEach(s => { if (eg[s]) elPts.push(GP2[eg[s]]); });
+  elPts.sort((a, b) => a - b);
+  const best3 = elPts.slice(0, 3);
 
-  pool.sort((a, b) => a - b);
-  const b6 = pool.slice(0, 6);
-  if (b6.length < 6) return null;
-  return b6.reduce((s, p) => s + p, 0);
+  if (cores.length < 3 || best3.length < 3) return null;
+  return cores.reduce((s,p)=>s+p,0) + best3.reduce((s,p)=>s+p,0);
 }
 
 function calcAgg(track, cg, el, eg) {
@@ -267,6 +270,35 @@ function runAnalysis({ track, cg, el, eg, scope, prefUni, progType, progs, schol
       else if (mGr) pass.push("Core Mathematics ✓");
       if (ef || mf) { b.push({ p, issues: iss, passes: [] }); return; }
     }
+    // ── Subject-specific requirements ──────────────────────────
+    // Health programmes: Biology + Chemistry + Physics required
+    const HEALTH_PROGS = ["medicine","nursing","midwif","pharmacy","pharmacist","physician","optom","physiother","radiograph","diagnostic","medical","laboratory","dentist","dental","nutrition","dietetic","herbal","occupational therapy","emergency medical","public health","health information","mental health","biomedical"];
+    // Engineering/Maths programmes: Elective Mathematics required
+    const ENG_MATH_PROGS = ["engineering","actuarial","mathematics","statistics","computer science","computer engineering","data science","artificial intelligence","robotics","quantitative","financial mathematics","physics"];
+    // Check if student has the subject in their electives
+    const hasEl = (subj) => el.some(e => e.toLowerCase().includes(subj.toLowerCase())) && Object.keys(eg).some(e => e.toLowerCase().includes(subj.toLowerCase()) && eg[e] && GP[eg[e]] <= 6);
+
+    if (track === "General Science") {
+      const isHealthProg = HEALTH_PROGS.some(k => pn.includes(k));
+      const isEngMathProg = ENG_MATH_PROGS.some(k => pn.includes(k));
+
+      if (isHealthProg) {
+        // Health programmes need Biology, Chemistry and Physics
+        if (!hasEl("biology")) iss.push("Biology required for this programme — not found in your electives or grade below C6");
+        else pass.push("Biology ✓");
+        if (!hasEl("chemistry")) iss.push("Chemistry required for this programme — not found in your electives or grade below C6");
+        else pass.push("Chemistry ✓");
+        if (!hasEl("physics")) iss.push("Physics required for this programme — not found in your electives or grade below C6");
+        else pass.push("Physics ✓");
+      } else if (isEngMathProg) {
+        // Engineering/Maths programmes need Elective Mathematics
+        if (!hasEl("elective math") && !hasEl("elective mathematics")) {
+          iss.push("Elective Mathematics required for this programme — not found in your electives or grade below C6");
+        } else pass.push("Elective Mathematics ✓");
+      }
+    }
+    // ────────────────────────────────────────────────────────────
+
     const ua = calcAggForUni(p.uni, p, track, cg, el, eg);
     if (!ua) {
       if (iss.length) { b.push({ p, issues: iss, passes: pass }); return; }
@@ -1123,7 +1155,7 @@ function CheckerPage({ unis, progs, schols, paystackKey }) {
                 </div>
                 <div className="flex gap-2">
                   <Btn variant="ghost" size="md" onClick={() => setPayStep("plan")}>← Back</Btn>
-                  <Btn full size="lg" disabled={!phone} onClick={() => setPayStep("doPaystack")}>Pay GHC{amt} →</Btn>
+                  <Btn full size="lg" disabled={!phone} onClick={() => setPayStep("confirm")}>Pay GHC{amt} →</Btn>
                 </div>
               </>
             )}
