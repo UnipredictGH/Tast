@@ -624,17 +624,16 @@ function CheckerPage({ unis, progs, schols, paystackKey }) {
     {k:"soc",  l:"Social Studies"},
   ];
 
+  const [payError, setPayError] = useState("");
   const doPaystack = () => {
     const amt = PRICES[plan];
-    console.log("doPaystack called", { plan, amt, paystackKey: paystackKey ? "loaded" : "MISSING", PaystackPop: typeof window.PaystackPop });
+    setPayError("");
     if (typeof window.PaystackPop === "undefined") {
-      setPayStep(null);
-      alert("Paystack could not load. Please check your internet connection and refresh the page.");
+      setPayError("Payment system could not load. Please refresh the page and try again.");
       return;
     }
     if (!paystackKey) {
-      setPayStep(null);
-      alert("Payment is not yet configured. Please contact UniPredict Ghana on WhatsApp: 0537 889 150");
+      setPayError("Payment not configured. Contact us on WhatsApp: 0537 889 150");
       return;
     }
     const handler = window.PaystackPop.setup({
@@ -1167,6 +1166,9 @@ function CheckerPage({ unis, progs, schols, paystackKey }) {
                 <h3 className="font-black text-[14px] text-gray-900 mb-1" style={{fontFamily:"Outfit,Arial,sans-serif"}}>Ready to Pay</h3>
                 <p className="text-[11.5px] text-gray-700 mb-1">Plan: <strong>{plan}</strong> — GHC{amt}</p>
                 <p className="text-[11px] text-gray-600 mb-5">Paystack secure checkout · MTN MoMo · Vodafone · Card</p>
+                {payError && (
+                  <div className="bg-red-50 border border-red-300 rounded-xl p-3 mb-3 text-[11px] text-red-700 font-semibold">{payError}</div>
+                )}
                 <Btn full size="lg" onClick={doPaystack}>Pay with Paystack →</Btn>
                 <p className="text-[10px] text-gray-600 mt-2">PCI-DSS Certified</p>
               </div>
