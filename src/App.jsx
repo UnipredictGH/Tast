@@ -176,10 +176,28 @@ function selectThirdCore(uni, prog, track, sc, so, GP2) {
   return best < 999 ? best : null;
 }
 
+// Define required electives per programme type
+function getRequiredElectives(pn) {
+  // Health-related programmes: Biology + Chemistry + Physics
+  const HEALTH = ["medicine","nursing","midwif","pharmacy","physician","optom",
+    "physiother","radiograph","diagnostic","medical","laboratory","dentist","dental",
+    "nutrition","dietetic","herbal","occupational therapy","emergency medical",
+    "public health","health information","mental health","biomedical","veterinar"];
+  // Engineering/Maths programmes: Physics + Chemistry + Elective Mathematics
+  const ENG = ["engineering","actuarial","computer science","computer engineering",
+    "data science","artificial intelligence","robotics","mathematics","statistics",
+    "physics","financial mathematics","quantitative"];
+
+  if (HEALTH.some(k => pn.includes(k))) return ["biology","chemistry","physics"];
+  if (ENG.some(k => pn.includes(k))) return ["physics","chemistry","elective math"];
+  return null; // no specific requirement — use best 3
+}
+
 function calcAggForUni(uni, prog, track, cg, el, eg) {
-  // CORRECT: 3 FIXED cores + best 3 electives
+  // CORRECT: 3 FIXED cores + 3 programme-specific electives
   const GP2 = getGP(uni);
   const e=getBest(cg,"eng"), m=getBest(cg,"maths"), sc=getBest(cg,"sci"), so=getBest(cg,"soc");
+  const pn = (prog?.name || "").toLowerCase();
 
   // Step 1: 3 fixed mandatory cores
   const cores = [];
@@ -188,14 +206,34 @@ function calcAggForUni(uni, prog, track, cg, el, eg) {
   const thirdCore = selectThirdCore(uni, prog, track, sc, so, GP2);
   if (thirdCore !== null) cores.push(thirdCore);
 
-  // Step 2: best 3 electives from student's selected subjects
-  const elPts = [];
-  el.forEach(s => { if (eg[s]) elPts.push(GP2[eg[s]]); });
-  elPts.sort((a, b) => a - b);
-  const best3 = elPts.slice(0, 3);
+  // Step 2: determine which electives to use for aggregate
+  const requiredEl = getRequiredElectives(pn);
 
-  if (cores.length < 3 || best3.length < 3) return null;
-  return cores.reduce((s,p)=>s+p,0) + best3.reduce((s,p)=>s+p,0);
+  let elPts = [];
+  if (requiredEl) {
+    // Use the specific required electives for this programme type
+    requiredEl.forEach(req => {
+      // Find matching subject in student's electives
+      const match = el.find(s => s.toLowerCase().includes(req));
+      if (match && eg[match]) {
+        elPts.push(GP2[eg[match]]);
+      }
+    });
+    // If student doesn't have all required subjects, fill remaining with best available
+    if (elPts.length < 3) {
+      const usedSubjects = requiredEl.map(r => el.find(s => s.toLowerCase().includes(r))).filter(Boolean);
+      const remaining = el.filter(s => !usedSubjects.includes(s));
+      remaining.forEach(s => { if (eg[s] && elPts.length < 3) elPts.push(GP2[eg[s]]); });
+    }
+  } else {
+    // No specific requirement — use best 3 electives
+    el.forEach(s => { if (eg[s]) elPts.push(GP2[eg[s]]); });
+    elPts.sort((a, b) => a - b);
+    elPts = elPts.slice(0, 3);
+  }
+
+  if (cores.length < 3 || elPts.length < 3) return null;
+  return cores.reduce((s,p)=>s+p,0) + elPts.reduce((s,p)=>s+p,0);
 }
 
 function calcAgg(track, cg, el, eg) {
@@ -1541,18 +1579,23 @@ function AboutPage() {
         {name:"Alexander Piasa Asiamah",role:"Founder & CEO · CTO",bio:"Visionary behind UniPredict Ghana. Built the platform from the ground up to make university admissions transparent and accessible for every Ghanaian student.",img:"https://i.imgur.com/6dQfNZr.jpeg",linkedin:"https://www.linkedin.com/in/alexander-piasa-asiamah-557265387"},
         {name:"Gideon Appianing",role:"Co-CTO",bio:"Co-Chief Technology Officer at UniPredict Ghana. Brings deep technical expertise to ensure the platform is robust, fast, and reliable for thousands of students.",img:"https://i.imgur.com/0zoQrig.jpeg",linkedin:"https://www.linkedin.com/in/gideon-appianing"},
       ].map(t=>(
-        <Card key={t.name} className="p-3 flex gap-3 mb-3">
-          <img src={t.img} alt={t.name} className="w-16 h-16 rounded-full object-cover border-2 border-violet-200 flex-shrink-0" onError={e=>e.target.style.display="none"}/>
-          <div className="flex-1">
-            <div className="font-black text-[12.5px] text-gray-900 mb-1">{t.name}</div>
-            <div className="mb-1.5"><Badge color="violet">{t.role}</Badge></div>
-            <p className="text-[11px] text-gray-600 leading-relaxed mb-2">{t.bio}</p>
-            <a href={t.linkedin} target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:4,background:"#0077b5",color:"#fff",borderRadius:8,padding:"4px 10px",fontSize:10,fontWeight:700,textDecoration:"none"}}>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-              LinkedIn
+        <div key={t.name} style={{background:"#fff",borderRadius:16,border:"1px solid #ede9fe",boxShadow:"0 2px 8px rgba(124,58,237,.07)",padding:16,marginBottom:12,display:"flex",gap:14,alignItems:"flex-start"}}>
+          <img
+            src={t.img}
+            alt={t.name}
+            onError={e=>{e.target.onerror=null;e.target.src="https://ui-avatars.com/api/?name="+encodeURIComponent(t.name)+"&background=7c3aed&color=fff&size=128";}}
+            style={{width:72,height:72,borderRadius:"50%",objectFit:"cover",border:"3px solid #7c3aed",flexShrink:0,display:"block"}}
+          />
+          <div style={{flex:1}}>
+            <div style={{fontWeight:900,fontSize:13,color:"#111827",marginBottom:3}}>{t.name}</div>
+            <div style={{display:"inline-block",background:"#ede9fe",color:"#6d28d9",borderRadius:99,padding:"2px 10px",fontSize:10,fontWeight:700,marginBottom:6}}>{t.role}</div>
+            <p style={{fontSize:11,color:"#4b5563",lineHeight:1.6,marginBottom:8}}>{t.bio}</p>
+            <a href={t.linkedin} target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:5,background:"#0077b5",color:"#fff",borderRadius:8,padding:"5px 12px",fontSize:11,fontWeight:700,textDecoration:"none"}}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+              Connect on LinkedIn
             </a>
           </div>
-        </Card>
+        </div>
       ))}
       <div className="bg-gradient-to-r from-violet-700 to-pink-500 rounded-2xl p-4">
         <div className="font-bold text-[13px] text-white mb-1">🇬🇭 Made in Ghana</div>
@@ -1684,7 +1727,7 @@ function Footer({ setPage, setLegal }) {
             ))}
           </div>
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <div className="text-[10.5px] text-gray-700">© 2025 UniPredict Ghana. All rights reserved.</div>
+            <div className="text-[10.5px] text-gray-700">© 2026 UniPredict Ghana. All rights reserved.</div>
             <div className="flex gap-3">
               {["about","contact"].map(id=>(
                 <button key={id} onClick={()=>setPage(id)} className="text-[10.5px] text-gray-700 underline cursor-pointer capitalize select-none outline-none border-0 bg-transparent">{id}</button>
